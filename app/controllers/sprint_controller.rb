@@ -1,4 +1,5 @@
 class SprintController < ApplicationController
+	before_action :authenticate_user!
 
 	def index
 		# client = Octokit::Client.new(:access_token => "5ff4a26913fa32655c941fb4bc7c652cd9e3fce7")
@@ -16,15 +17,14 @@ class SprintController < ApplicationController
 		@repos.each do |repo|
 			repo_issues = Octokit.list_issues(repo[:name])
 			
+
+			# This is overkill now that we only need 'in progress' and not &&
 			repo_issues.keep_if do |issue|
-				in_progress_label, current_sprint, result = false
+				in_progress_label, result = false
 				issue[:labels].each do |label|
 					in_progress_label = true if label[:name] == "in progress" 
 				end
-				issue[:labels].each do |label|
-					current_sprint = true if label[:name] == "Sprint 10/7" 
-				end
-				result = true if in_progress_label && current_sprint
+				result = true if in_progress_label
 				result 
 			end
 

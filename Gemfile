@@ -13,6 +13,9 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 
 gem 'octokit', '~> 4.0'
+gem 'devise'
+gem 'omniauth'
+gem 'omniauth-github'
 
 
 gem 'multi_json'
