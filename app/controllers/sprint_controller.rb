@@ -21,10 +21,10 @@ class SprintController < ApplicationController
 				issue[:labels].each do |label|
 					in_progress_label = true if label[:name] == "in progress" 
 				end
-				issue[:labels].each do |label|
-					current_sprint = true if label[:name] == "Sprint 10/7" 
-				end
-				result = true if in_progress_label && current_sprint
+				# issue[:labels].each do |label|
+				# 	current_sprint = true if label[:name] == "Sprint 10/7" 
+				# end
+				result = true if in_progress_label #&& current_sprint
 				result 
 			end
 
@@ -60,5 +60,59 @@ class SprintController < ApplicationController
 				end
 			end
 		end
+	end
+
+	def backlog
+		Octokit.auto_paginate = true
+		@repos = [
+			{ name: "department-of-veterans-affairs/appeals-pm"},
+			{	name: "department-of-veterans-affairs/caseflow-certification"},
+			{	name: "department-of-veterans-affairs/caseflow-commons"},
+			{	name: "department-of-veterans-affairs/caseflow-dashboard"},
+			{	name: "department-of-veterans-affairs/appeals-deployment"},
+			{	name: "department-of-veterans-affairs/caseflow-efolder" }
+		]
+
+		@current_issues = []
+		@repos.each do |repo|
+			repo_issues = Octokit.list_issues(repo[:name])
+			
+			repo_issues.keep_if do |issue|
+				in_progress_label, current_sprint, result = false
+				issue[:labels].each do |label|
+					in_progress_label = true if label[:name] == "Sprint 10/21" 
+				end
+				# issue[:labels].each do |label|
+				# 	current_sprint = true if label[:name] == "Sprint 10/7" 
+				# end
+				result = true if in_progress_label #&& current_sprint
+				result 
+			end
+
+			@current_issues << repo_issues
+			repo[:count] = repo_issues.count
+		end
+		@current_issues.flatten!
+
+		@last_sprint_issues = []
+		@repos.each do |repo|
+			repo_issues = Octokit.list_issues(repo[:name])
+			
+			repo_issues.keep_if do |issue|
+				in_progress_label, current_sprint, result = false
+				issue[:labels].each do |label|
+					in_progress_label = true if label[:name] == "Sprint 10/7" 
+				end
+				# issue[:labels].each do |label|
+				# 	current_sprint = true if label[:name] == "Sprint 10/7" 
+				# end
+				result = true if in_progress_label #&& current_sprint
+				result 
+			end
+
+			@last_sprint_issues << repo_issues
+			repo[:count] = repo_issues.count
+		end
+		@last_sprint_issues.flatten!
 	end
 end
