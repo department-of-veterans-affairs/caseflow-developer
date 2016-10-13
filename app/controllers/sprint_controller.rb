@@ -61,4 +61,72 @@ class SprintController < ApplicationController
 			end
 		end
 	end
+
+	def backlog
+		Octokit.auto_paginate = true
+		@repos = [
+			{ name: "department-of-veterans-affairs/appeals-pm"},
+			{	name: "department-of-veterans-affairs/caseflow-certification"},
+			{	name: "department-of-veterans-affairs/caseflow-commons"},
+			{	name: "department-of-veterans-affairs/caseflow-dashboard"},
+			{	name: "department-of-veterans-affairs/appeals-deployment"},
+			{	name: "department-of-veterans-affairs/caseflow-efolder" }
+		]
+
+
+
+		@current_issues = []
+		@repos.each do |repo|
+			repo_issues = Octokit.list_issues(repo[:name])
+			
+			repo_issues.keep_if do |issue|
+				in_progress_label, result = false
+				issue[:labels].each do |label|
+					in_progress_label = true if label[:name] == "Sprint 10/21" 
+				end
+				result = true if in_progress_label
+				result 
+			end
+
+			@current_issues << repo_issues
+			repo[:count] = repo_issues.count
+		end
+		@current_issues.flatten!
+
+		# Get Epics
+		@current_issues_epics = []
+		@current_issues.each do |issue|
+			issue[:labels].each do |label|
+				if label[:name].start_with? "epic-"
+					@current_issues_epics << { name: label[:name] }
+				end
+			end
+		end
+
+		# @current_issues.each do |issue|
+		# 	if 
+		# end
+
+
+		@last_sprint_issues = []
+		@repos.each do |repo|
+			repo_issues = Octokit.list_issues(repo[:name])
+			
+			repo_issues.keep_if do |issue|
+				in_progress_label, current_sprint, result = false
+				issue[:labels].each do |label|
+					in_progress_label = true if label[:name] == "Sprint 10/7" 
+				end
+				# issue[:labels].each do |label|
+				# 	current_sprint = true if label[:name] == "Sprint 10/7" 
+				# end
+				result = true if in_progress_label #&& current_sprint
+				result 
+			end
+
+			@last_sprint_issues << repo_issues
+			repo[:count] = repo_issues.count
+		end
+		@last_sprint_issues.flatten!
+	end
 end

@@ -1,0 +1,98 @@
+<%= @current_issues_epics %>
+<!-- <table>
+  <thead>
+    <tr>
+      <th>Repo</th>
+      <th>Open Issues</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @repos.each do |repo| %>
+      <tr>
+        <td><%= repo[:name] %></td>
+        <td><%= repo[:count] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table> -->
+
+  <ul class="collapsible" data-collapsible="accordion">
+    <li>
+      <div class="collapsible-header">Current Sprint Issues - <%= @current_issues.count %></div>
+      <div class="collapsible-body">
+  <table>
+    <thead>
+      <tr>
+        <th data-field="id">#</th>
+        <th data-field="description">Description</th>
+        <th data-field="labels">Labels</th>
+        <th data-field="assignees">Assignees</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @current_issues.each do |issue| %>
+      <tr>
+        <td><a href="<%= issue[:html_url] %>">#<%= issue[:number] %></a></td>
+        <td><%= issue[:title] %></td>
+        <td>
+          <% issue[:labels].each do |l| %>
+            <div class="chip" style="background-color: #<%= l[:color] %>"><%= l[:name] %></div>
+          <% end %>
+        </td>
+        <td>
+<!--          <% issue[:assignees].each do |a| %>
+         <div class="chip">
+            <img src="<%= a[:avatar_url] %>" alt="Contact Person">
+            <%= a[:login] %>
+          </div>
+          <% end %> -->
+                
+          <%= issue[:assignees].map{ |assignee| assignee[:login] }.join(", ") %>
+        </td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+      </div>
+    </li>
+    <li>
+      <div class="collapsible-header">Last Sprint Issues - <%= @last_sprint_issues.count %></div>
+      <div class="collapsible-body">
+        <table>
+    <thead>
+      <tr>
+        <th data-field="id">#</th>
+        <th data-field="description">Description</th>
+        <th data-field="labels">Labels</th>
+        <th data-field="assignees">Assignees</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @last_sprint_issues.each do |issue| %>
+      <tr>
+        <td><a href="<%= issue[:html_url] %>">#<%= issue[:number] %></a></td>
+        <td><%= issue[:title] %></td>
+        <td>
+          <% issue[:labels].each do |l| %>
+            <div class="chip" style="background-color: #<%= l[:color] %>"><%= l[:name] %></div>
+          <% end %>
+        </td>
+        <td>
+<!--          <% issue[:assignees].each do |a| %>
+         <div class="chip">
+            <img src="<%= a[:avatar_url] %>" alt="Contact Person">
+            <%= a[:login] %>
+          </div>
+          <% end %> -->
+                
+          <%= issue[:assignees].map{ |assignee| assignee[:login] }.join(", ") %>
+        </td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+      </div>
+    </li>
+
+  </ul>
+

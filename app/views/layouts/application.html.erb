@@ -12,6 +12,18 @@
   </head>
 
   <body>
+    <nav>
+      <div class="nav-wrapper">
+        <div class="container">
+        <a href="#" class="brand-logo">Caseflow Developer</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><%= link_to "Daily Standup", sprint_path %></li>
+          <li><%= link_to "Sprint Backlog", sprint_backlog_path  %></li>
+          <li><%= link_to('Logout', destroy_user_session_path, :method => :delete) %> </li>
+        </ul>
+        </div>
+      </div>
+    </nav>
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
   	<div class="container">
