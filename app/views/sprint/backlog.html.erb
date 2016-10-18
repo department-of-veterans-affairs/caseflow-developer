@@ -1,24 +1,9 @@
-<h3>Current Sprint Issues by Owner</h3>
 <%= @current_issues_epics %>
-<!-- <table>
-  <thead>
-    <tr>
-      <th>Repo</th>
-      <th>Open Issues</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @repos.each do |repo| %>
-      <tr>
-        <td><%= repo[:name] %></td>
-        <td><%= repo[:count] %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table> -->
-<br>
 
-<div class="row">
+  <ul class="collapsible" data-collapsible="accordion">
+    <li>
+      <div class="collapsible-header">Current Sprint Issues - <%= @current_sprint_issues.count %></div>
+      <div class="collapsible-body">
   <table>
     <thead>
       <tr>
@@ -29,7 +14,7 @@
       </tr>
     </thead>
     <tbody>
-      <% @current_issues.each do |issue| %>
+      <% @current_sprint_issues.each do |issue| %>
       <tr>
         <td><a href="<%= issue[:html_url] %>">#<%= issue[:number] %></a></td>
         <td><%= issue[:title] %></td>
@@ -39,12 +24,7 @@
           <% end %>
         </td>
         <td>
-<!--          <% issue[:assignees].each do |a| %>
-         <div class="chip">
-            <img src="<%= a[:avatar_url] %>" alt="Contact Person">
-            <%= a[:login] %>
-          </div>
-          <% end %> -->
+
                 
           <%= issue[:assignees].map{ |assignee| assignee[:login] }.join(", ") %>
         </td>
@@ -52,11 +32,12 @@
       <% end %>
     </tbody>
   </table>
-    <br>
-<hr>
-<h2>Last Sprint Issues</h2>
-    <div class="row">
-  <table>
+      </div>
+    </li>
+    <li>
+      <div class="collapsible-header">Last Sprint Issues - <%= @last_sprint_issues.count %></div>
+      <div class="collapsible-body">
+        <table>
     <thead>
       <tr>
         <th data-field="id">#</th>
@@ -76,12 +57,7 @@
           <% end %>
         </td>
         <td>
-<!--          <% issue[:assignees].each do |a| %>
-         <div class="chip">
-            <img src="<%= a[:avatar_url] %>" alt="Contact Person">
-            <%= a[:login] %>
-          </div>
-          <% end %> -->
+
                 
           <%= issue[:assignees].map{ |assignee| assignee[:login] }.join(", ") %>
         </td>
@@ -89,4 +65,8 @@
       <% end %>
     </tbody>
   </table>
-</div>
+      </div>
+    </li>
+
+  </ul>
+
