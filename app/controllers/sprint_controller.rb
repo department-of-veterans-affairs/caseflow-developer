@@ -7,9 +7,9 @@ class SprintController < ApplicationController
 
 	def backlog
 		github = Github.new
-		@current_sprint_issues = github.current_sprint_issues
-		@last_sprint_issues = github.last_sprint_issues
-	
+		@current_sprint_issues = github.issues_by_label "Sprint 10/21"
+		@last_sprint_issues = github.issues_by_label "Sprint 10/7"
+
 		# Get Epics
 		@current_issues_epics = []
 		@current_sprint_issues.each do |issue|

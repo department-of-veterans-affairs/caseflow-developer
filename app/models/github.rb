@@ -16,7 +16,7 @@ class Github
   end
     
   def in_progress_by_assignee
-    issues = in_progress_issues
+    issues = issues_by_label "in progress"
     assignees = assignees_from_issues(issues)
 
     # This adds a key => [] to store the issues
@@ -44,28 +44,13 @@ class Github
     return assignees
   end
 
-  def current_sprint_issues
+  def issues_by_label(label)
     @all_issues.keep_if do |issue|
-      issue[:labels].map(&:name).include? "Sprint 10/21"
-    end.dup
-  end
-
-  def last_sprint_issues
-    @all_issues.keep_if do |issue|
-      issue[:labels].map(&:name).include? "Sprint 10/7"
+      issue[:labels].map(&:name).include? label
     end.dup
   end
 
   private 
-
-  def in_progress_issues
-    @all_issues.keep_if do |issue|
-      issue[:labels].map(&:name).include? "in progress"
-    end.dup
-  end
-
-
-
 
   def assignees_from_issues(issues)
     assignees = []
