@@ -15,7 +15,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   private 
 
   def check_team_membership(id)
-    Octokit.team_member?(2008080, request.env["omniauth.auth"].extra.raw_info.login)
+    Octokit.team_member?(id, request.env["omniauth.auth"].extra.raw_info.login)
   end
 
 end
