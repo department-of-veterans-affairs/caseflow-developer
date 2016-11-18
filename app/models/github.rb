@@ -14,6 +14,14 @@ class Github
       @all_issues.concat Octokit.list_issues(repo[:name])
     end
   end
+
+  def closed_issues
+    @closed_issues = []
+    REPOS_URLS.each do |repo|
+      @closed_issues.concat Octokit.list_issues(repo[:name], state: "closed")
+    end
+    @closed_issues
+  end
     
   def in_progress_by_assignee
     issues = issues_by_label "in progress"

@@ -5,19 +5,8 @@ class SprintController < ApplicationController
 		@in_progress_by_assignee = Github.new.in_progress_by_assignee
 	end
 
-	def backlog
+	def closed_issues
 		github = Github.new
-		@current_sprint_issues = github.issues_by_label "Sprint 10/21"
-		@last_sprint_issues = github.issues_by_label "Sprint 10/7"
-
-		# Get Epics
-		@current_issues_epics = []
-		@current_sprint_issues.each do |issue|
-			issue[:labels].each do |label|
-				if label[:name].start_with? "epic-"
-					@current_issues_epics << { name: label[:name] }
-				end
-			end
-		end
+		@current_sprint_issues = github.closed_issues
 	end
 end
