@@ -5,7 +5,8 @@ class Github
     { name: "department-of-veterans-affairs/caseflow-commons"},
     { name: "department-of-veterans-affairs/caseflow-dashboard"},
     { name: "department-of-veterans-affairs/appeals-deployment"},
-    { name: "department-of-veterans-affairs/caseflow-efolder" }
+    { name: "department-of-veterans-affairs/caseflow-efolder" },
+    { name: "department-of-veterans-affairs/caseflow-feedback"}
   ]
 
   def initialize
