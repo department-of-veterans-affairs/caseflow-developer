@@ -1,12 +1,12 @@
 class Github
   REPOS_URLS = [
-    { name: "department-of-veterans-affairs/appeals-pm"},
-    { name: "department-of-veterans-affairs/caseflow-certification"},
-    { name: "department-of-veterans-affairs/caseflow-commons"},
-    { name: "department-of-veterans-affairs/caseflow-dashboard"},
-    { name: "department-of-veterans-affairs/appeals-deployment"},
-    { name: "department-of-veterans-affairs/caseflow-efolder" },
-    { name: "department-of-veterans-affairs/caseflow-feedback"}
+    { name: "department-of-veterans-affairs/appeals-pm"}#,
+    # { name: "department-of-veterans-affairs/caseflow-certification"},
+    # { name: "department-of-veterans-affairs/caseflow-commons"},
+    # { name: "department-of-veterans-affairs/caseflow-dashboard"},
+    # { name: "department-of-veterans-affairs/appeals-deployment"},
+    # { name: "department-of-veterans-affairs/caseflow-efolder" },
+    # { name: "department-of-veterans-affairs/caseflow-feedback"}
   ]
 
   def initialize
