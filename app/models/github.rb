@@ -1,33 +1,52 @@
 class Github
-  REPOS_URLS = [
-    { name: "department-of-veterans-affairs/appeals-pm"}#,
-    # { name: "department-of-veterans-affairs/caseflow-certification"},
-    # { name: "department-of-veterans-affairs/caseflow-commons"},
-    # { name: "department-of-veterans-affairs/caseflow-dashboard"},
-    # { name: "department-of-veterans-affairs/appeals-deployment"},
-    # { name: "department-of-veterans-affairs/caseflow-efolder" },
-    # { name: "department-of-veterans-affairs/caseflow-feedback"}
+  APPEALS_PM_URLS = [
+    { name: "department-of-veterans-affairs/appeals-pm"}
   ]
 
-  def initialize
+  CASEFLOW_URLS = [
+    { name: "department-of-veterans-affairs/caseflow"},
+    { name: "department-of-veterans-affairs/appeals-deployment"},
+    { name: "department-of-veterans-affairs/caseflow-commons"},
+    { name: "department-of-veterans-affairs/connect_vbms"},
+    { name: "department-of-veterans-affairs/caseflow-feedback"},
+    { name: "department-of-veterans-affairs/omniauth-saml-va"},
+    { name: "department-of-veterans-affairs/appeals-qa"},
+    { name: "department-of-veterans-affairs/ruby-bgs"},
+    { name: "department-of-veterans-affairs/caseflow-efolder" }
+    
+  ]
+
+  def initialize(team)
     @all_issues = []
-    REPOS_URLS.each do |repo|
-      @all_issues.concat Octokit.list_issues(repo[:name])
+
+
+    if team == 'appeals_pm' || team.nil?
+      APPEALS_PM_URLS.each do |repo|
+        @all_issues.concat Octokit.list_issues(repo[:name])
+      end
     end
+
+    if team == 'caseflow' ||  team.nil?
+      CASEFLOW_URLS.each do |repo|
+        @all_issues.concat Octokit.list_issues(repo[:name])
+      end
+    end
+    # puts @all_issues
   end
 
-  def closed_issues
-    @closed_issues = []
-    REPOS_URLS.each do |repo|
-      @closed_issues.concat Octokit.list_issues(repo[:name], state: "closed")
-    end
-    @closed_issues
-  end
+  # def closed_issues
+  #   @closed_issues = []
+  #   REPOS_URLS.each do |repo|
+  #     @closed_issues.concat Octokit.list_issues(repo[:name], state: "closed")
+  #   end
+  #   @closed_issues
+  # end
     
   def in_progress_by_assignee
-    issues = issues_by_label "in progress"
+    issues = issues_by_label
     assignees = assignees_from_issues(issues)
 
+    puts issues
     # This adds a key => [] to store the issues
     assignees.each do |assignee|
       assignee[:full_name] = Octokit.user(assignee[:login]).name
@@ -54,9 +73,9 @@ class Github
     return assignees
   end
 
-  def issues_by_label(label)
+  def issues_by_label
     @all_issues.keep_if do |issue|
-      issue[:labels].map(&:name).include? label
+      issue[:labels].map(&:name).include?("in progress") || issue[:labels].map(&:name).include?("In Progress")
     end.dup
   end
 

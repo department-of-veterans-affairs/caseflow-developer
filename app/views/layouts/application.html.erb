@@ -17,7 +17,9 @@
         <div class="container">
         <a href="#" class="brand-logo">Caseflow Developer</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><%= link_to "Daily Standup", sprint_standup_path %></li>
+          <li><%= link_to "Caseflow Standup", sprint_standup_path(team: 'caseflow') %></li>
+          <li><%= link_to "Appeals PM Standup", sprint_standup_path(team: 'appeals_pm') %></li>
+          <li><%= link_to "Appeals All Standup", sprint_standup_path %></li>
           <li><%= link_to('Logout', destroy_user_session_path, :method => :delete) %> </li>
         </ul>
         </div>
