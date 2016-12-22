@@ -35,6 +35,7 @@
 			<thead>
 				<tr>
 					<th data-field="id">#</th>
+					<th data-field="id">Repo</th>
 					<th data-field="description">Description</th>
 					<th data-field="labels">Labels</th>
 					<th data-field="assignees">Assignees</th>
@@ -44,6 +45,8 @@
 				<% assignee[:issues].each do |issue| %>
 				<tr style="<%= "background-color: #fff3e0" if issue.key? :pull_request %>">
 					<td><a href="<%= issue[:html_url] %>"><%= "PR" if issue.key? :pull_request %>#<%= issue[:number] %></a></td>
+					<td><%= issue[:html_url].split("/")[4] %></td>
+
 					<td><%= issue[:title] %></td>
 					<td>
 						<% issue[:labels].each do |l| %>
