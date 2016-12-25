@@ -2,7 +2,26 @@
 
 <blockquote><p>Only issues that are marked as <strong>in progress</strong> are shown.</p></blockquote>
 
-<div class="row">
+
+<h4>Repos</h4>
+<blockquote>
+	<ul>
+		<% unless params[:team].nil? %>
+			<% Github.const_get(params[:team]).each do |repo| %>
+				<%= repo[:name] %>
+				<br>
+			<% end %>
+		<% else %>
+			All Appeals Mod Repos
+		<% end %>
+	</ul>	
+</blockquote>
+
+<hr>
+<br>
+
+
+<!-- <div class="row">
 <div class="col s6">
 <h5>Briefing Format</h5>
 <ol>
@@ -20,15 +39,13 @@
 </div>
 <br>
 <hr>
-<br><br>
+<br><br> -->
 <div class="row">
 	<% @in_progress_by_assignee.each do |assignee| %>
 		<div class="row">
-			<div class="col s1">
-				<img src="<%= assignee[:avatar_url] %>" alt="" class="circle responsive-img">
-			</div>
-			<div class="col s11">
-				<h4><%= assignee[:full_name] %> (<%= assignee[:login] %>)</h4>
+			<div class="" >
+				<img src="<%= assignee[:avatar_url] %>" alt="" class="" style="border-radius: 50%; height: 100px;width: 100px;overflow: hidden;">
+				<h2 style="display: inline-block; padding-left: 15px;"><%= assignee[:full_name] %> (<%= assignee[:login] %>)</h2>
 			</div>
 		</div>
 		<table>

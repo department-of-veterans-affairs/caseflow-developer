@@ -1,9 +1,9 @@
 class Github
-  APPEALS_PM_URLS = [
+  APPEALS_PM = [
     { name: "department-of-veterans-affairs/appeals-pm"}
   ]
 
-  CASEFLOW_URLS = [
+  CASEFLOW = [
     { name: "department-of-veterans-affairs/caseflow"},
     { name: "department-of-veterans-affairs/appeals-deployment"},
     { name: "department-of-veterans-affairs/caseflow-commons"},
@@ -20,18 +20,17 @@ class Github
     @all_issues = []
 
 
-    if team == 'appeals_pm' || team.nil?
-      APPEALS_PM_URLS.each do |repo|
+    if team == 'APPEALS_PM' || team.nil?
+      APPEALS_PM.each do |repo|
         @all_issues.concat Octokit.list_issues(repo[:name])
       end
     end
 
-    if team == 'caseflow' ||  team.nil?
-      CASEFLOW_URLS.each do |repo|
+    if team == 'CASEFLOW' || team.nil?
+      CASEFLOW.each do |repo|
         @all_issues.concat Octokit.list_issues(repo[:name])
       end
     end
-    # puts @all_issues
   end
 
   # def closed_issues
