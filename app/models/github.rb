@@ -46,7 +46,6 @@ class Github
     issues = issues_by_label
     assignees = assignees_from_issues(issues)
 
-    puts issues
     # This adds a key => [] to store the issues
     assignees.each do |assignee|
       assignee[:full_name] = Octokit.user(assignee[:login]).name

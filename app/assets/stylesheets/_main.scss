@@ -1,0 +1,136 @@
+// Add scss includes explicitly here.
+@import 'caseflow_main';
+
+.cf-logo-image-default {
+  background-image: url(asset-path('caseflow-default-logo.svg'));
+  width: 32px;
+  height: 32px;
+  background-size: 32px 32px;
+}
+
+.cf-logo-image-certification {
+  background-image: url(asset-path('caseflow-certification-logo.svg'));
+  width: 32px;
+  height: 32px;
+  background-size: 32px 32px;
+}
+
+.cf-logo-image-dispatch {
+  background-image: url(asset-path('caseflow-dispatch-logo.svg'));
+  width: 32px;
+  height: 32px;
+  background-size: 32px 32px;
+}
+
+.cf-stats {
+  margin-top: 0;
+
+  .cf-tab-navigation {
+    margin: 0 0 2em;
+  }
+}
+
+.cf-stats-section {
+  &.-activity,
+  &.-certification {
+    .bar { fill: $color-primary-alt; }
+  }
+
+  &.-timing {
+    .bar { fill: $color-green-light; }
+  }
+
+  &.-missing {
+    .bar { fill: $color-secondary; }
+  }
+}
+
+.cf-red-text {
+  color: $color-secondary;
+}
+
+.cf-centered-buttons {
+  width: 50%;
+  margin: auto;
+}
+
+.cf-dropdown-menu li:last-child {
+  border-top: none;
+}
+
+.cf-dropdown-menu li:first-child {
+  border-bottom: 1px solid #d6d7d9;
+}
+
+.cf-associated-header {
+  color: $color-primary;
+  font-size: 20px;
+  margin-left: 20px;
+}
+
+.cf-right-side {
+  text-align: right;
+  float: right;
+}
+
+.cf-section-break {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.cf-validation {
+  min-height: 12px;
+  color: $color-secondary;
+}
+
+.cf-invisible {
+  display: none;
+}
+
+.cf-adjacent-buttons {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+* + .cf-form-dropdown {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.cf-form-textinput[readonly] {
+  background: $color-gray-lightest !important;
+  color: $color-gray-dark;
+  opacity: 1 !important;
+}
+
+.cf-loading-button-text {
+  display: inline-block;
+  margin-right: 10px;
+  line-height: 0;
+  position: relative;
+  top: -9px;
+}
+
+.cf-loading-button-symbol {
+  display: inline-block;
+}
+
+.cf-button-associated-text {
+  color: $color-gray;
+}
+
+.cf-modal-normal-text {
+  margin: auto;
+  width: 70%;
+  text-align: left;
+}
+
+.cf-form-textarea--full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+.cf-modal-body {
+  max-height: 100%;
+  overflow-y: auto;
+}

@@ -1,22 +1,33 @@
 source 'https://rubygems.org'
 
 
-gem 'rails', '~> 5.0.0', '>= 5.0.0.1'
+
+gem 'rails'
 gem 'pg'
-gem 'puma', '~> 3.0'
+
+gem 'puma'
+
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.2'
 
+
 gem 'jquery-rails'
-gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 
 gem 'octokit', '~> 4.0'
+
+# Authentication
 gem 'devise'
 gem 'omniauth'
 gem 'omniauth-github'
 
+# React
+gem "react_on_rails", "~> 6"
+
+# Style
+gem 'us_web_design_standards', git: 'https://github.com/harrisj/us_web_design_standards_gem.git', branch: 'rails-assets-fixes'
+gem "caseflow", git: "https://github.com/department-of-veterans-affairs/caseflow-commons", ref: "57c515c"
 
 gem 'multi_json'
 

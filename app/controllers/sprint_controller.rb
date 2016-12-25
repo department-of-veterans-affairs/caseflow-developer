@@ -6,7 +6,7 @@ class SprintController < ApplicationController
 	end
 
 	def closed_issues
-		github = Github.new
-		@current_sprint_issues = github.closed_issues
+		# github = Github.new
+		# @current_sprint_issues = github.closed_issues
 	end
 end

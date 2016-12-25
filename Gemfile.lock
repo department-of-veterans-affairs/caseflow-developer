@@ -1,3 +1,26 @@
+GIT
+  remote: https://github.com/department-of-veterans-affairs/caseflow-commons
+  revision: 57c515ce5d04ebd720a749a5c2bee1f83553be02
+  ref: 57c515c
+  specs:
+    caseflow (0.1.5)
+      aws-sdk (~> 2)
+      bourbon
+      d3-rails
+      jquery-rails
+      momentjs-rails
+      neat
+      us_web_design_standards
+
+GIT
+  remote: https://github.com/harrisj/us_web_design_standards_gem.git
+  revision: a789c0a7b55d13f378fb3a0da675bcc687079ea3
+  branch: rails-assets-fixes
+  specs:
+    us_web_design_standards (0.0.2)
+      railties
+      sass (~> 3.4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -40,7 +63,18 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.4.0)
     arel (7.1.2)
+    aws-sdk (2.6.42)
+      aws-sdk-resources (= 2.6.42)
+    aws-sdk-core (2.6.42)
+      aws-sigv4 (~> 1.0)
+      jmespath (~> 1.0)
+    aws-sdk-resources (2.6.42)
+      aws-sdk-core (= 2.6.42)
+    aws-sigv4 (1.0.0)
     bcrypt (3.1.11)
+    bourbon (4.2.7)
+      sass (~> 3.4)
+      thor (~> 0.19)
     builder (3.2.2)
     byebug (9.0.5)
     coffee-rails (4.2.1)
@@ -51,6 +85,9 @@ GEM
       execjs
     coffee-script-source (1.10.0)
     concurrent-ruby (1.0.2)
+    connection_pool (2.2.1)
+    d3-rails (4.3.0)
+      railties (>= 3.1)
     debug_inspector (0.0.2)
     devise (4.2.0)
       bcrypt (~> 3.0)
@@ -67,6 +104,8 @@ GEM
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.14)
+    foreman (0.82.0)
+      thor (~> 0.19.1)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
     hashie (3.4.4)
@@ -74,6 +113,7 @@ GEM
     jbuilder (2.6.0)
       activesupport (>= 3.0.0, < 5.1)
       multi_json (~> 1.2)
+    jmespath (1.3.1)
     jquery-rails (4.2.1)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
@@ -92,9 +132,14 @@ GEM
     mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
     minitest (5.9.0)
+    momentjs-rails (2.15.1)
+      railties (>= 3.1)
     multi_json (1.12.1)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
+    neat (1.8.0)
+      sass (>= 3.3)
+      thor (~> 0.19)
     nio4r (1.2.1)
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
@@ -146,10 +191,18 @@ GEM
       method_source
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
+    rainbow (2.1.0)
     rake (11.3.0)
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
+    react_on_rails (6.3.2)
+      addressable
+      connection_pool
+      execjs (~> 2.5)
+      foreman
+      rails (>= 3.2)
+      rainbow (~> 2.1)
     responders (2.3.0)
       railties (>= 4.2.0, < 5.1)
     sass (3.4.22)
@@ -176,9 +229,6 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (2.0.5)
-    turbolinks (5.0.1)
-      turbolinks-source (~> 5)
-    turbolinks-source (5.0.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uglifier (3.0.2)
@@ -199,6 +249,7 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
+  caseflow!
   coffee-rails (~> 4.2)
   devise
   dotenv-rails
@@ -210,15 +261,16 @@ DEPENDENCIES
   omniauth
   omniauth-github
   pg
-  puma (~> 3.0)
-  rails (~> 5.0.0, >= 5.0.0.1)
+  puma
+  rails
+  react_on_rails (~> 6)
   sass-rails (~> 5.0)
   spring
   spring-watcher-listen (~> 2.0.0)
-  turbolinks (~> 5)
   tzinfo-data
   uglifier (>= 1.3.0)
+  us_web_design_standards!
   web-console
 
 BUNDLED WITH
-   1.12.5
+   1.13.6

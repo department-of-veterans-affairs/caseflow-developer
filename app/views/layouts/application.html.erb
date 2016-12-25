@@ -3,36 +3,50 @@
   <head>
     <title>AppealsSprint</title>
     <%= csrf_meta_tags %>
-
-    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
-
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
   </head>
 
   <body>
-    <nav>
-      <div class="nav-wrapper blue">
-        <div class="container">
-        <a href="#" class="brand-logo">Caseflow Developer</a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><%= link_to "Caseflow Standup", sprint_standup_path(team: 'caseflow') %></li>
-          <li><%= link_to "Appeals PM Standup", sprint_standup_path(team: 'appeals_pm') %></li>
-          <li><%= link_to "Appeals All Standup", sprint_standup_path %></li>
-          <li><%= link_to('Logout', destroy_user_session_path, :method => :delete) %> </li>
-        </ul>
+
+    <header>
+      <nav class="cf-nav">
+        <div class="usa-grid-full">
+          <a href="/" id="cf-logo-link">
+            <h1 class="cf-logo"><%= content_tag(:span, nil, :class => "cf-logo-image cf-logo-image-default") %>Caseflow Developer</h1>
+          </a>
+          <h2 id="page-title" class="cf-application-title"><%#= yield :page_title %></h2>
+
+          <% unless current_user.nil? %>
+            <div class="cf-dropdown cf-nav-dropdown">
+              <a href="#menu" class="cf-dropdown-trigger" id="menu-trigger">
+                Standup Reports
+              </a>
+              <ul id="menu" class="cf-dropdown-menu" aria-labelledby="menu-trigger">
+                <li><%= link_to "All Repos", sprint_standup_path %></li>
+                <li><%= link_to "Appeals PM", sprint_standup_path(team: 'appeals_pm') %></li>
+                <li><%= link_to "Caseflow", sprint_standup_path(team: 'caseflow') %></li>
+              </ul>
+              <%= link_to('Sign out', destroy_user_session_path, :method => :delete, style: "padding-left: 15px;") %>
+            </div>
+          <% end %>
         </div>
+      </nav>
+    </header>
+
+    <main class="usa-grid">
+      <div class="cf-app">
+        <p class="notice"><%= notice %></p>
+        <p class="alert"><%= alert %></p>
+        <%= yield %>
       </div>
-    </nav>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
-  	<div class="container">
+    </main>
 
-	    <%= yield %>
-    </div>
-  </body>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
-      
+    <footer class="cf-txt-c usa-grid cf-app-footer">
+      <div class="cf-push-left">
+        <span>Built</span> with <abbr title="love">&#9825;</abbr> by the
+        <a href="http://www.va.gov/ds/">Digital Service at the <abbr title="Department of Veterans Affairs">VA</abbr></a>.
+      </div>
+    </footer>
+  </body>      
 </html>
