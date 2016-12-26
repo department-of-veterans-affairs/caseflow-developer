@@ -42,7 +42,7 @@ class Github
   # end
     
   def in_progress_by_assignee
-    issues = issues_by_label
+    issues = in_progress_issues
     assignees = assignees_from_issues(issues)
 
     # This adds a key => [] to store the issues
@@ -71,10 +71,21 @@ class Github
     return assignees
   end
 
-  def issues_by_label
-    @all_issues.keep_if do |issue|
+
+  def in_progress_issues
+    issues = @all_issues.dup
+    issues.keep_if do |issue|
       issue[:labels].map(&:name).include?("in progress") || issue[:labels].map(&:name).include?("In Progress")
-    end.dup
+    end
+    return issues
+  end
+
+  def in_validation_issues
+    issues = @all_issues.dup
+    issues.keep_if do |issue|
+      issue[:labels].map(&:name).include?("In Validation") 
+    end
+    return issues
   end
 
   private 

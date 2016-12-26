@@ -1,21 +1,19 @@
 source 'https://rubygems.org'
 
-
-
 gem 'rails'
 gem 'pg'
 
 gem 'puma'
 
-gem 'sass-rails', '~> 5.0'
-gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.2'
+gem 'sass-rails'
+gem 'uglifier'
+gem 'coffee-rails'
 
 
 gem 'jquery-rails'
 gem 'jbuilder', '~> 2.5'
 
-gem 'octokit', '~> 4.0'
+gem 'octokit'
 
 # Authentication
 gem 'devise'
@@ -23,7 +21,7 @@ gem 'omniauth'
 gem 'omniauth-github'
 
 # React
-gem "react_on_rails", "~> 6"
+gem "react_on_rails"
 
 # Style
 gem 'us_web_design_standards', git: 'https://github.com/harrisj/us_web_design_standards_gem.git', branch: 'rails-assets-fixes'
@@ -38,12 +36,11 @@ group :development, :test do
 end
 
 group :development do
- 
   gem 'web-console'
-  gem 'listen', '~> 3.0.5'
+  gem 'listen'
  
   gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'spring-watcher-listen'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
