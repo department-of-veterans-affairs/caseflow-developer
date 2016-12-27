@@ -109,6 +109,8 @@ GEM
       thor (~> 0.19.1)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
+    haml (4.0.7)
+      tilt
     hashie (3.4.6)
     i18n (0.7.0)
     jbuilder (2.6.1)
@@ -204,6 +206,7 @@ GEM
       foreman
       rails (>= 3.2)
       rainbow (~> 2.1)
+    redis (3.3.2)
     responders (2.3.0)
       railties (>= 4.2.0, < 5.1)
     ruby_dep (1.5.0)
@@ -256,6 +259,7 @@ DEPENDENCIES
   coffee-rails
   devise
   dotenv-rails
+  haml
   jbuilder (~> 2.5)
   jquery-rails
   listen
@@ -267,6 +271,7 @@ DEPENDENCIES
   puma
   rails
   react_on_rails
+  redis
   sass-rails
   spring
   spring-watcher-listen

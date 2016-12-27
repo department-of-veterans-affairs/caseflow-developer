@@ -1,102 +1,51 @@
 class Github
-  APPEALS_PM = [
-    { name: "department-of-veterans-affairs/appeals-pm"}
-  ]
+  GITHUB_TEAM_IDS = {
+    APPEALS_PM: 2221656,
+    CASEFLOW: 2221658
+  }
 
-  CASEFLOW = [
-    { name: "department-of-veterans-affairs/caseflow"},
-    { name: "department-of-veterans-affairs/appeals-deployment"},
-    { name: "department-of-veterans-affairs/caseflow-commons"},
-    { name: "department-of-veterans-affairs/connect_vbms"},
-    { name: "department-of-veterans-affairs/caseflow-feedback"},
-    { name: "department-of-veterans-affairs/omniauth-saml-va"},
-    { name: "department-of-veterans-affairs/appeals-qa"},
-    { name: "department-of-veterans-affairs/ruby-bgs"},
-    { name: "department-of-veterans-affairs/caseflow-efolder" }
-    
-  ]
+  attr_accessor :repo_names
 
-  def initialize(team)
-    @all_issues = []
-
-
-    if team == 'APPEALS_PM' || team.nil?
-      APPEALS_PM.each do |repo|
-        @all_issues.concat Octokit.list_issues(repo[:name])
-      end
-    end
-
-    if team == 'CASEFLOW' || team.nil?
-      CASEFLOW.each do |repo|
-        @all_issues.concat Octokit.list_issues(repo[:name])
-      end
-    end
+  def initialize
+    @repo_names = []
   end
 
-  # def closed_issues
-  #   @closed_issues = []
-  #   REPOS_URLS.each do |repo|
-  #     @closed_issues.concat Octokit.list_issues(repo[:name], state: "closed")
-  #   end
-  #   @closed_issues
-  # end
-    
-  def in_progress_by_assignee
-    issues = in_progress_issues
-    assignees = assignees_from_issues(issues)
-
-    # This adds a key => [] to store the issues
-    assignees.each do |assignee|
-      assignee[:full_name] = Octokit.user(assignee[:login]).name
-      assignee[:issues] = []
+  def get_issues(team_name, *labels)
+    team_ids = if team_name.nil?
+      GITHUB_TEAM_IDS.values
+    else
+      GITHUB_TEAM_IDS.values_at(team_name.to_sym)
     end
-    assignees << { login: "Not Assigned", issues: [] }
-    
-    issues.each do |issue|
-      if !issue[:assignee].nil?
-        assignees.each do |assignee|
-          if assignee[:login] == issue[:assignee][:login]
-            assignee[:issues] << issue
-          end
-        end
-      else
-        assignees.each do |assignee|
-          if assignee[:login] == "Not Assigned"
-            assignee[:issues] << issue
-          end
-        end
+
+    get_team_repos(team_ids).map do |repo|
+      Octokit.list_issues(repo[:full_name], labels: labels.join(','))
+    end.flatten
+  end
+
+  def issues_by_assignee(team_name, *labels)
+    grouped_issues = get_issues(team_name,labels).group_by do |issue|
+      if issue[:assignee].nil?
+        issue[:assignee] =  {login: "Unassigned"}
       end
+      issue[:assignee][:login]
     end
 
-    return assignees
-  end
+    grouped_issues.delete("Unassigned") if grouped_issues.values_at("Unassigned").empty?
 
-
-  def in_progress_issues
-    issues = @all_issues.dup
-    issues.keep_if do |issue|
-      issue[:labels].map(&:name).include?("in progress") || issue[:labels].map(&:name).include?("In Progress")
+    # Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
+    grouped_issues.transform_keys do |key|
+      Octokit.user(key)[:name]
     end
-    return issues
-  end
-
-  def in_validation_issues
-    issues = @all_issues.dup
-    issues.keep_if do |issue|
-      issue[:labels].map(&:name).include?("In Validation") 
-    end
-    return issues
   end
 
   private 
 
-  def assignees_from_issues(issues)
-    assignees = []
-    issues.each do |issue|
-      assignees << issue[:assignee] unless issue[:assignee].nil?
-    end
-    assignees.uniq!(&:login)
-    
-    return assignees
+  def get_team_repos(team_ids)
+    team_ids.map do |team_id|
+      team_repos = Octokit.team_repositories(team_id)
+      @repo_names.concat team_repos
+      team_repos
+    end.flatten
   end
 end
+

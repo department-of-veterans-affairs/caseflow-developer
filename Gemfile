@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rails'
 gem 'pg'
+gem 'redis'
 
 gem 'puma'
 
@@ -9,6 +10,7 @@ gem 'sass-rails'
 gem 'uglifier'
 gem 'coffee-rails'
 
+gem 'haml'
 
 gem 'jquery-rails'
 gem 'jbuilder', '~> 2.5'

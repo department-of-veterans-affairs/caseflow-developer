@@ -1,0 +1,27 @@
+%h4 Daily Standup Report
+%blockquote
+  %p
+    Only issues that are marked as
+    %strong in progress
+    are shown.
+%h4 Repos
+%blockquote
+  %ul
+    - @github.repo_names.map(&:full_name).uniq.each do |repo_name|
+      = repo_name
+      %br
+%hr
+%br
+.row
+  - Hash[ @in_progress_by_assignee.sort_by { |key, val| key.to_s } ].each do |github_name, issues|
+    .row
+      %div
+        %img{:alt => "", :src => issues.first[:assignee][:avatar_url], :style => "border-radius: 50%; height: 100px;width: 100px;overflow: hidden;"}/
+        %h2{:style => "display: inline-block; padding-left: 15px;"}
+          = github_name
+          (#{issues.first[:assignee][:login]})
+    = render "issues_table", issues: issues
+    %br/
+- unless @in_validation_issues.nil?
+  %h2 In Validation
+  = render "issues_table", issues: @in_validation_issues
