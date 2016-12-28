@@ -24,13 +24,9 @@ class Github
 
   def issues_by_assignee(team_name, *labels)
     grouped_issues = get_issues(team_name,labels).group_by do |issue|
-      if issue[:assignee].nil?
-        issue[:assignee] =  {login: "Unassigned"}
-      end
+      issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
       issue[:assignee][:login]
     end
-
-    grouped_issues.delete("Unassigned") if grouped_issues.values_at("Unassigned").empty?
 
     # Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
     grouped_issues.transform_keys do |key|
