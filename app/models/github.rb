@@ -4,20 +4,13 @@ class Github
     CASEFLOW: 2221658
   }
 
-  attr_accessor :repo_names
+  attr_accessor :team_members, :team_repos
 
-  def initialize
-    @repo_names = []
-  end
 
   def get_issues(team_name, *labels)
-    team_ids = if team_name.nil?
-      GITHUB_TEAM_IDS.values
-    else
-      GITHUB_TEAM_IDS.values_at(team_name.to_sym)
-    end
+    geat_team_info(team_name)
 
-    get_team_repos(team_ids).map do |repo|
+    @team_repos.map do |repo|
       Octokit.list_issues(repo[:full_name], labels: labels.join(','))
     end.flatten
   end
@@ -34,13 +27,21 @@ class Github
     end
   end
 
-  private 
+  private
 
-  def get_team_repos(team_ids)
-    team_ids.map do |team_id|
-      team_repos = Octokit.team_repositories(team_id)
-      @repo_names.concat team_repos
-      team_repos
+  def geat_team_info(team_name)
+    team_ids = if team_name.nil?
+      GITHUB_TEAM_IDS.values
+    else
+      GITHUB_TEAM_IDS.values_at(team_name.to_sym)
+    end
+
+    @team_members = team_ids.map do |team_id|
+      Octokit.team_members(team_id)
+    end.flatten
+
+    @team_repos = team_ids.map do |team_id|
+      Octokit.team_repositories(team_id)
     end.flatten
   end
 end
