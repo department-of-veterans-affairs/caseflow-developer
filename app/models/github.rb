@@ -7,16 +7,15 @@ class Github
   attr_accessor :team_members, :team_repos
 
 
-  def get_issues(team_name, *labels)
-    geat_team_info(team_name)
-
+  def get_issues(team_name, state, *labels)
+    get_team_info(team_name)
     @team_repos.map do |repo|
-      Octokit.list_issues(repo[:full_name], labels: labels.join(','))
+      Octokit.list_issues(repo[:full_name], state: state, labels: labels.join(','))
     end.flatten
   end
 
   def issues_by_assignee(team_name, *labels)
-    grouped_issues = get_issues(team_name,labels).group_by do |issue|
+    grouped_issues = get_issues(team_name,'open', labels).group_by do |issue|
       issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
       issue[:assignee][:login]
     end
@@ -29,7 +28,7 @@ class Github
 
   private
 
-  def geat_team_info(team_name)
+  def get_team_info(team_name)
     team_ids = if team_name.nil?
       GITHUB_TEAM_IDS.values
     else

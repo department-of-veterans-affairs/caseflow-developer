@@ -1,0 +1,9 @@
+- unless @issues_by_project.nil?
+  %h2 Closed Issues
+  - Hash[ @issues_by_project.sort_by { |key, val| key.to_s } ].each do |repo_name, issues|
+    .row
+      %div
+        %h2{:style => "display: inline-block; padding-left: 15px;"}
+          = repo_name
+    = render "issues_table", issues: issues
+    %br/

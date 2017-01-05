@@ -40,6 +40,11 @@
       = render "issues_table", issues: issues
       %br/
 
+
+- unless @product_support_issues.nil?
+  %h2 Product Support Issues
+  = render "issues_table", issues: @product_support_issues
+
 - unless @in_validation_issues.nil?
   %h2 In Validation
   = render "issues_table", issues: @in_validation_issues
