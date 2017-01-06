@@ -9,6 +9,7 @@ class Github
 
   def get_issues(team_name, state, *labels)
     get_team_info(team_name)
+
     @team_repos.map do |repo|
       Octokit.list_issues(repo[:full_name], state: state, labels: labels.join(','))
     end.flatten
@@ -24,6 +25,10 @@ class Github
     grouped_issues.transform_keys do |key|
       Octokit.user(key)[:name]
     end
+  end
+
+  def get_product_support_issues
+    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
   end
 
   private
