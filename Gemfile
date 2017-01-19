@@ -21,6 +21,7 @@ gem 'octokit'
 gem 'devise'
 gem 'omniauth'
 gem 'omniauth-github'
+gem 'pry'
 
 # React
 gem "react_on_rails"
@@ -35,6 +36,7 @@ group :development, :test do
  
   gem 'byebug', platform: :mri
   gem 'dotenv-rails'
+  gem 'pry'
 end
 
 group :development do
