@@ -33,6 +33,10 @@ class Github
     Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
   end
 
+  def get_all_support_issues
+    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", since: "#{Date.today-5}")
+  end
+
   private
 
   def get_team_info(team_name)
