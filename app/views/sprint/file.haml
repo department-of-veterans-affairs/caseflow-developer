@@ -1,0 +1,29 @@
+- unless @weekly_report.nil?
+  %h2 Weekly Report
+
+.cf-table-wrap
+  %table.usa-table-borderless.cf-table-borderless
+    %thead
+      %tr
+        %th{"data-field" => "number"} Number
+        %th{"data-field" => "id"} Created_at
+        %th{"data-field" => "description"} Title
+        %th{"data-field" => "labels"} Product
+        %th{"data-field" => "labels"} Labels
+        %th{"data-field" => "assignees"} Assignees
+        %tbody
+   
+  - @weekly_report.group_by {|issue| }.each do |group, issues|
+    %h2= group.to_s 
+   
+    %tr{:class => "list-#{group}"} 
+    - issues.each do |issue| 
+    case true
+      %td= issue[:number] 
+      %td= issue[:Created_at]
+      %td= issue[:title]
+      %td= issue[:assignees].map{|assignee| assignee[:login]}.join(",")
+
+
+
+   

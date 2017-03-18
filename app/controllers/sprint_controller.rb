@@ -29,6 +29,9 @@ class SprintController < ApplicationController
   def weekly_report
     @github = Github.new
     @weekly_report = @github.get_all_support_issues
+    respond_to do |format|
+      format.html
+      format.xlsx
+     end
   end
-
 end

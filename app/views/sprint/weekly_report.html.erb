@@ -1,0 +1,55 @@
+<% unless @weekly_report.nil? %>
+  <h2>Weekly Report</h2>
+<% end %>
+
+  <table  class="usa-table-borderless cf-table-borderless">
+      <tr>
+        <th data-field="number">Number</th>
+        <th data-field="id">Created_at</th>
+        <th data-field="description">Description</th>
+        <th data-field="assignees">Assignees</th>
+        <th data-field="labels">Date</th>
+        <th data-field="status">State</th>
+         <th data-field="link">Link</th>
+        <th data-field="labels">Type Issue</th>
+        <th data-field="labels">Product</th>
+      </tr>
+
+  <% @weekly_report.group_by {|issue| }.each do |group, issues| %>
+    <h2>
+      <%= group.to_s  %>
+    </h2>
+    <tr class="list-<%= group %>"></tr>
+    <tr><% issues.each do |issue|  %>
+      <td>
+        <%= issue[:number]  %>
+      </td>
+      <td>
+        <%= issue[:created_at] %>
+      </td>
+      <td>
+        <%= issue[:title] %>
+      </td>
+      <td>
+        <%= issue[:assignees].map{|assignee| assignee[:login]}.join(",") %>
+      </td>
+      <td>
+        <%= (Date.today - issue[:created_at].to_date).to_i %>
+      </td>
+      <td>
+        <%= issue[:state] %>
+      </td>
+      <td>
+        <%= issue[:html_url] %>
+      </td>
+       <td>
+        <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", ") %>
+      </td>
+       <td>
+        <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", ") %>
+      </td>
+      </tr>
+    <% end %>
+  <% end %>
+</table>
+

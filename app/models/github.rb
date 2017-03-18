@@ -1,4 +1,8 @@
 class Github
+
+  LABELS = ["Bug", "Feature Request", "Performance"]
+  PRODUCT_LABELS = ["Dispatch", "eFolder", "eReader", "eReader", "Certification", "Caseflow System"]
+
   GITHUB_TEAM_IDS = {
     APPEALS_PM: 2221656,
     CASEFLOW: 2221658
@@ -34,8 +38,9 @@ class Github
   end
 
   def get_all_support_issues
-    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", since: "#{Date.today-5}")
-  end
+    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "all", since: "#{Date.today-7}")
+  end 
+  
 
   private
 
@@ -54,5 +59,6 @@ class Github
       Octokit.team_repositories(team_id)
     end.flatten
   end
-end
+ end
+
 
