@@ -1,0 +1,16 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Report") do |sheet|
+	styles = sheet.styles
+	style_center = styles.add_style alignment: {horizontal: :left}, fg_color: "0000FF"
+    style_header = styles.add_style :bg_color => "ffc400",:fg_color => "FF", :sz => 11, :b => true, :font_name =>"Garamond (Body)", :alignment => {:horizontal => :left}
+    style_altrow_odd = styles.add_style :bg_color => "D7E2EE", :sz => 12, :alignment => {:horizontal => :left}
+    style_altrow_even = styles.add_style :bg_color => "FFFFFF", :sz => 12, :alignment => {:horizontal => :left}
+    #Heading
+	 sheet.add_row ["Issue #", "Date Recieved","Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], :style => style_header
+	 sheet.column_widths 6, 10, 15, nil, nil, nil, nil, nil
+      @weekly_report.each do |iss|
+      sheet.add_row [ iss[:number], iss[:created_at],(Date.today - iss[:created_at].to_date).to_i, iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
+       iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "), iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
+       iss[:title], iss[:state],iss[:assignees].map{|assignee| assignee[:login]}.join(",")]
+    end
+end

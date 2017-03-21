@@ -1,18 +1,24 @@
 <% unless @weekly_report.nil? %>
   <h2>Weekly Report</h2>
 <% end %>
+<p>
+Download:
+<%= link_to 'Weekly Report .xlsx', sprint_weekly_report_path(format: :xlsx)
+ %>
+</p>
 
-  <table  class="usa-table-borderless cf-table-borderless">
+ <table  class="usa-table-borderless cf-table-borderless">
       <tr>
         <th data-field="number">Number</th>
-        <th data-field="id">Created_at</th>
-        <th data-field="description">Description</th>
+        <th data-field="id">Date</th>
+        <th data-field="description">Summary</th>
         <th data-field="assignees">Assignees</th>
-        <th data-field="labels">Date</th>
+        <th data-field="labels">Days Open</th>
         <th data-field="status">State</th>
          <th data-field="link">Link</th>
-        <th data-field="labels">Type Issue</th>
+        <th data-field="labels">Issue Type</th>
         <th data-field="labels">Product</th>
+         <th data-field="labels">Report</th>
       </tr>
 
   <% @weekly_report.group_by {|issue| }.each do |group, issues| %>
@@ -48,8 +54,12 @@
        <td>
         <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", ") %>
       </td>
+       <td>
+        <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", ") %>
+      </td>
       </tr>
     <% end %>
   <% end %>
+ 
 </table>
 

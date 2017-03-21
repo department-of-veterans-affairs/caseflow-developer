@@ -1,7 +1,8 @@
 class Github
 
-  LABELS = ["Bug", "Feature Request", "Performance"]
+  LABELS = ["Bug", "Feature Request", "Performance", "Training Request"]
   PRODUCT_LABELS = ["Dispatch", "eFolder", "eReader", "eReader", "Certification", "Caseflow System"]
+  REPORT_LABELS = ["NSD", "Feedback","DSVA Member","Phone"]
 
   GITHUB_TEAM_IDS = {
     APPEALS_PM: 2221656,
@@ -38,9 +39,18 @@ class Github
   end
 
   def get_all_support_issues
-    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "all", since: "#{Date.today-7}")
+    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "all", since: "#{Date.today-5}")
   end 
   
+  def self.to_csv(options = {})
+  CSV.generate(options) do |csv|
+    csv << column_names
+    all.each do |product|
+      csv << product.attributes
+    end
+  end
+end
+
 
   private
 

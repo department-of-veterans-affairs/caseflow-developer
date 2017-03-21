@@ -1,3 +1,4 @@
+
 - unless @weekly_report.nil?
   %h2 Weekly Report
 
@@ -18,12 +19,68 @@
    
     %tr{:class => "list-#{group}"} 
     - issues.each do |issue| 
-    case true
       %td= issue[:number] 
       %td= issue[:Created_at]
       %td= issue[:title]
       %td= issue[:assignees].map{|assignee| assignee[:login]}.join(",")
-
-
+      %td=(Date.today - issue[:created_at].to_date).to_i
+      %td= issue[:state]
+      %td=issue[:link]
 
    
+
+
+
+<a href="weekly_report">Excel</a>
+  <table  class="usa-table-borderless cf-table-borderless">
+      <tr>
+        <th data-field="number">Number</th>
+        <th data-field="id">Date</th>
+        <th data-field="description">Description</th>
+        <th data-field="assignees">Assignees</th>
+        <th data-field="labels">Days Open</th>
+        <th data-field="status">State</th>
+         <th data-field="link">Link</th>
+        <th data-field="labels">Issue Type</th>
+        <th data-field="labels">Product</th>
+      </tr>
+
+  <% @weekly_report.group_by {|issue| }.each do |group, issues| %>
+    <h2>
+      <%= group.to_s  %>
+    </h2>
+    <tr class="list-<%= group %>"></tr>
+    <tr><% issues.each do |issue|  %>
+      <td>
+        <%= issue[:number]  %>
+      </td>
+      <td>
+        <%= issue[:created_at] %>
+      </td>
+      <td>
+        <%= issue[:title] %>
+      </td>
+      <td>
+        <%= issue[:assignees].map{|assignee| assignee[:login]}.join(",") %>
+      </td>
+      <td>
+        <%= (Date.today - issue[:created_at].to_date).to_i %>
+      </td>
+      <td>
+        <%= issue[:state] %>
+      </td>
+      <td>
+        <%= issue[:html_url] %>
+      </td>
+       <td>
+        <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", ") %>
+      </td>
+       <td>
+        <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", ") %>
+      </td>
+      </tr>
+    <% end %>
+  <% end %>
+ 
+</table>
+

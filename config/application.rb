@@ -1,5 +1,4 @@
 require_relative 'boot'
-
 require 'axlsx'
 require 'csv'
 require 'rails/all'

@@ -1,6 +1,6 @@
 class SprintController < ApplicationController
 	before_action :authenticate_user!
-
+  respond_to :xlsx, :html
 	def standup
 		@github = Github.new
 		@in_progress_by_assignee = @github.issues_by_assignee(params[:team], "In Progress")
@@ -31,7 +31,12 @@ class SprintController < ApplicationController
     @weekly_report = @github.get_all_support_issues
     respond_to do |format|
       format.html
-      format.xlsx
+      format.xlsx {render xlsx: "sprint/report"}
      end
   end
 end
+
+
+
+
+
