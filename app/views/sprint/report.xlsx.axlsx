@@ -1,16 +1,19 @@
 wb = xlsx_package.workbook
 wb.add_worksheet(name: "Report") do |sheet|
 	styles = sheet.styles
-	style_center = styles.add_style alignment: {horizontal: :left}, fg_color: "0000FF"
-    style_header = styles.add_style :bg_color => "ffc400",:fg_color => "FF", :sz => 11, :b => true, :font_name =>"Garamond (Body)", :alignment => {:horizontal => :left}
-    style_altrow_odd = styles.add_style :bg_color => "D7E2EE", :sz => 12, :alignment => {:horizontal => :left}
-    style_altrow_even = styles.add_style :bg_color => "FFFFFF", :sz => 12, :alignment => {:horizontal => :left}
+    style_header = styles.add_style :bg_color => "fbc02d",:fg_color => "FF", :sz => 12, :b => true, :font_name =>"Garamond (Body)", :alignment => {:horizontal => :left}, :border => { :style => :thin,  :color => 'fffff', :edges => [:bottom] }
+    style_blue = styles.add_style :bg_color => "ffecb3", :border => { :style => :thin,     :color => 'fffff', :edges => [:bottom] }
+    style_red =  styles.add_style :bg_color => "ffd54f", :border => { :style => :thin,     :color => 'fffff',  :edges => [:bottom] }
+    style_yellow =  styles.add_style :bg_color => "ffe082", :border => { :style => :thin,  :color => 'fffff',:edges => [:bottom] }
+    style_bright =  styles.add_style :bg_color => "ffab00", :border => { :style => :thin,  :color => 'fffff',:edges => [:bottom] }
+    style_border =  styles.add_style({:border => { :style => :thin, :color => 'fffff', :name => :right, :edges => [:bottom] }})
+   
     #Heading
-	 sheet.add_row ["Issue #", "Date Recieved","Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], :style => style_header
-	 sheet.column_widths 6, 10, 15, nil, nil, nil, nil, nil
+	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], :style => style_header ,:height => 25, :widths=> [10,:ignore, 10, 10,:auto]
       @weekly_report.each do |iss|
-      sheet.add_row [ iss[:number], iss[:created_at],(Date.today - iss[:created_at].to_date).to_i, iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
+      sheet.add_row [ iss[:number], iss[:created_at], iss[:closed_at], (Date.today - iss[:created_at].to_date).to_i, iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
        iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "), iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
-       iss[:title], iss[:state],iss[:assignees].map{|assignee| assignee[:login]}.join(",")]
+       iss[:title], iss[:state],iss[:assignees].map{|assignee| assignee[:login]}.join(",")], :style => [style_blue, nil, nil, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow ] 
     end
 end
+
