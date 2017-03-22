@@ -84,3 +84,29 @@
  
 </table>
 
+ @weekly_report.each do |button|
+    sheet.add_row [button.name, button.category, button.price]
+
+
+
+    iss[:created_at],(Date.today - iss[:created_at].to_date).to_i, iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
+       iss[:title], iss[:state], iss[:assignees].map{|assignee| assignee[:login]}.join(","), iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", ")]
+      
+
+      , iss[:created_at],(Date.today - iss[:created_at].to_date).to_i, iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
+       iss[:title], iss[:state], iss[:assignees].map{|assignee| assignee[:login]}.join(",")
+
+
+
+
+
+ get "/sprint/weekly_report" => "sprint#weekly_report"
+
+ def weekly_report
+    @github = Github.new
+    @weekly_report = @github.get_all_support_issues
+    respond_to do |format|
+      format.html
+      format.xlsx {render xlsx: "sprint/report"}
+     end
+  end
