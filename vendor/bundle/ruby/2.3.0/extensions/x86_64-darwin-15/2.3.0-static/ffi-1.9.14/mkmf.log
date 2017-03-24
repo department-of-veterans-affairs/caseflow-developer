@@ -158,7 +158,7 @@ checked program was:
 "clang -o conftest -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0/x86_64-darwin15 -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0/ruby/backward -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0 -I. -I/usr/include/ffi -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT    -O3 -Wno-error=shorten-64-to-32  -pipe conftest.c  -L. -L/Users/vhaisajoness/.rbenv/versions/2.3.0/lib -L. -L/Users/vhaisajoness/.rbenv/versions/2.3.0/lib  -fstack-protector -L/usr/local/lib    -lffi  -lruby-static -framework CoreFoundation -lffi  -lpthread -ldl -lobjc "
 Undefined symbols for architecture x86_64:
   "_ffi_raw_call", referenced from:
-      _t in conftest-07123c.o
+      _t in conftest-614fe2.o
 ld: symbol(s) not found for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 checked program was:
@@ -208,7 +208,7 @@ checked program was:
 "clang -o conftest -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0/x86_64-darwin15 -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0/ruby/backward -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0 -I. -I/usr/include/ffi -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT    -O3 -Wno-error=shorten-64-to-32  -pipe conftest.c  -L. -L/Users/vhaisajoness/.rbenv/versions/2.3.0/lib -L. -L/Users/vhaisajoness/.rbenv/versions/2.3.0/lib  -fstack-protector -L/usr/local/lib    -lffi  -lruby-static -framework CoreFoundation -lffi  -lpthread -ldl -lobjc "
 Undefined symbols for architecture x86_64:
   "_rb_thread_blocking_region", referenced from:
-      _t in conftest-58172d.o
+      _t in conftest-c4c313.o
 ld: symbol(s) not found for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 checked program was:
@@ -348,7 +348,7 @@ checked program was:
 "clang -o conftest -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0/x86_64-darwin15 -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0/ruby/backward -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include/ruby-2.3.0 -I. -I/usr/include/ffi -I/Users/vhaisajoness/.rbenv/versions/2.3.0/include  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT    -O3 -Wno-error=shorten-64-to-32  -pipe conftest.c  -L. -L/Users/vhaisajoness/.rbenv/versions/2.3.0/lib -L. -L/Users/vhaisajoness/.rbenv/versions/2.3.0/lib  -fstack-protector -L/usr/local/lib    -lffi  -lruby-static -framework CoreFoundation -lffi  -lpthread -ldl -lobjc "
 Undefined symbols for architecture x86_64:
   "_ffi_prep_cif_var", referenced from:
-      _t in conftest-1690cb.o
+      _t in conftest-404383.o
 ld: symbol(s) not found for architecture x86_64
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 checked program was:

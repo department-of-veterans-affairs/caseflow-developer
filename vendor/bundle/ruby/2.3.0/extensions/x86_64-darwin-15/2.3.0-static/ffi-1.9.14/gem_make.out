@@ -1,5 +1,5 @@
 current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/ffi-1.9.14/ext/ffi_c
-/Users/vhaisajoness/.rbenv/versions/2.3.0/bin/ruby -r ./siteconf20170324-72589-g6lveu.rb extconf.rb
+/Users/vhaisajoness/.rbenv/versions/2.3.0/bin/ruby -r ./siteconf20170324-6104-1b2c18b.rb extconf.rb
 checking for ffi.h... no
 checking for ffi.h in /usr/local/include,/usr/include/ffi... yes
 checking for ffi_call() in -lffi... yes
@@ -57,4 +57,4 @@ linking shared-object ffi_c.bundle
 
 current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/ffi-1.9.14/ext/ffi_c
 make "DESTDIR=" install
-/usr/local/bin/ginstall -c -m 0755 ffi_c.bundle ./.gem.20170324-72589-eq6849
+/usr/local/bin/ginstall -c -m 0755 ffi_c.bundle ./.gem.20170324-6104-iefzth
