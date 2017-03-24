@@ -27,6 +27,8 @@ gem 'pry'
 gem 'axlsx_rails', '~> 0.4.0'
 gem 'axlsx', '~> 2.0', '>= 2.0.1'
 
+# Time 
+gem 'activesupport', '~> 5.0'
 # React
 gem "react_on_rails"
 

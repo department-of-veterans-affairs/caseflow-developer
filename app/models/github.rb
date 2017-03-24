@@ -14,8 +14,7 @@ class Github
 
   def get_issues(team_name, state, *labels)
     get_team_info(team_name)
-
-    @team_repos.map do |repo|
+     @team_repos.map do |repo|
       Octokit.list_issues(repo[:full_name], state: state, labels: labels.join(','))
     end.flatten
   end
@@ -38,20 +37,13 @@ class Github
     Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
   end
 
+ 
   def get_all_support_issues
-    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "all", since: "#{Date.today - 7}")
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "all")
+    response.keep_if { |v| v[:created_at] >= 7.days.ago }
   end 
   
-  def self.to_csv(options = {})
-  CSV.generate(options) do |csv|
-    csv << column_names
-    all.each do |product|
-      csv << product.attributes
-    end
-  end
-end
-
-
+ 
   private
 
   def get_team_info(team_name)

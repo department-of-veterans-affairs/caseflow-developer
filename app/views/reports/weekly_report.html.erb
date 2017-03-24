@@ -12,7 +12,6 @@ Download:
         <th data-field="number">Number</th>
         <th data-field="id">Date</th>
         <th data-field="description">Summary</th>
-        <th data-field="assignees">Assignees</th>
         <th data-field="labels">Days Open</th>
         <th data-field="status">State</th>
          <th data-field="link">closed</th>
@@ -31,13 +30,10 @@ Download:
         <%= issue[:number]  %>
       </td>
       <td>
-        <%= issue[:created_at] %>
+        <%= issue.created_at.localtime%>
       </td>
       <td>
         <%= issue[:title] %>
-      </td>
-      <td>
-        <%= issue[:assignees].map{|assignee| assignee[:login]}.join(",") %>
       </td>
       <td>
         <%= (Date.today - issue[:created_at].to_date).to_i %>

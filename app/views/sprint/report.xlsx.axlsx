@@ -11,7 +11,7 @@ wb.add_worksheet(name: "Report") do |sheet|
     #Heading
 	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], :style => style_header ,:height => 25, :widths=> [10,:ignore, 10, 10,:auto]
       @weekly_report.each do |iss|
-      sheet.add_row [ iss[:number], iss[:created_at], iss[:closed_at], (Date.today - iss[:created_at].to_date).to_i, iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
+      sheet.add_row [ iss[:number], iss.created_at.localtime, iss[:closed_at], (Date.today - iss[:created_at].to_date).to_i, iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
        iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "), iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
        iss[:title], iss[:state],iss[:assignees].map{|assignee| assignee[:login]}.join(",")], :style => [style_blue, nil, nil, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow ] 
     end

@@ -1,0 +1,21 @@
+current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/puma-3.6.2/ext/puma_http11
+/Users/vhaisajoness/.rbenv/versions/2.3.0/bin/ruby -r ./siteconf20170324-72589-8cb2hy.rb extconf.rb
+checking for BIO_read() in -lcrypto... yes
+checking for SSL_CTX_new() in -lssl... yes
+checking for openssl/bio.h... yes
+creating Makefile
+
+current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/puma-3.6.2/ext/puma_http11
+make "DESTDIR=" clean
+
+current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/puma-3.6.2/ext/puma_http11
+make "DESTDIR="
+compiling http11_parser.c
+compiling io_buffer.c
+compiling mini_ssl.c
+compiling puma_http11.c
+linking shared-object puma/puma_http11.bundle
+
+current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/puma-3.6.2/ext/puma_http11
+make "DESTDIR=" install
+/usr/local/bin/ginstall -c -m 0755 puma_http11.bundle ./.gem.20170324-72589-u8a2k8/puma
