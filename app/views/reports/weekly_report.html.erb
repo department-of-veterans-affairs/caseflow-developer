@@ -3,8 +3,9 @@
 <% end %>
 <p>
 Download:
-<%= link_to 'Weekly Report .xlsx', sprint_weekly_report_path(format: :xlsx)
- %>
+<%= link_to 'Weekly Report .xlsx', sprint_weekly_report_path(format: :xlsx) %>
+<br>
+<%= link_to 'Incident Report .xlsx', sprint_incident_report_path(format: :xlsx) %>
 </p>
 
  <table  class="usa-table-borderless cf-table-borderless">
@@ -19,7 +20,6 @@ Download:
         <th data-field="labels">Product</th>
          <th data-field="labels">Report</th>
       </tr>
-
   <% @weekly_report.group_by {|issue| }.each do |group, issues| %>
     <h2>
       <%= group.to_s  %>

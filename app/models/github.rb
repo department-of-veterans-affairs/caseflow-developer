@@ -21,8 +21,8 @@ class Github
 
   def issues_by_assignee(team_name, *labels)
     issues = get_issues(team_name,'open', labels)
-    filtered_issues = issues.reject { |i| i[:html_url].split("/")[4] == "appeals-support" }
-    grouped_issues = filtered_issues.group_by do |issue|
+     filtered_issues = issues.reject { |i| i[:html_url].split("/")[4] == "appeals-support" }
+     grouped_issues = filtered_issues.group_by do |issue|
       issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
       issue[:assignee][:login]
     end
@@ -37,12 +37,20 @@ class Github
     Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
   end
 
-
+   #Use hash to Keep issues created in past 7 days
   def get_all_support_issues
     response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "all")
     response.keep_if { |v| v[:created_at] >= 7.days.ago }
   end 
   
+  #Method to get the incident report
+   def get_all_incident_issues
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "open")
+    response.reject { |v| v[:created_at] >= 10.days.ago }
+  end 
+  
+
+
  
   private
 
