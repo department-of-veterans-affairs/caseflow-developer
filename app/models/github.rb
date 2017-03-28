@@ -1,4 +1,9 @@
 class Github
+
+  LABELS = ["Bug", "Feature Request", "Performance", "Training Request"]
+  PRODUCT_LABELS = ["Dispatch", "eFolder", "eReader", "eReader", "Certification", "Caseflow System"]
+  REPORT_LABELS = ["NSD", "Source - Feedback","DSVA Member","Phone"]
+
   GITHUB_TEAM_IDS = {
     APPEALS_PM: 2221656,
     CASEFLOW: 2221658
@@ -9,16 +14,15 @@ class Github
 
   def get_issues(team_name, state, *labels)
     get_team_info(team_name)
-
-    @team_repos.map do |repo|
+     @team_repos.map do |repo|
       Octokit.list_issues(repo[:full_name], state: state, labels: labels.join(','))
     end.flatten
   end
 
   def issues_by_assignee(team_name, *labels)
     issues = get_issues(team_name,'open', labels)
-    filtered_issues = issues.reject { |i| i[:html_url].split("/")[4] == "appeals-support" }
-    grouped_issues = filtered_issues.group_by do |issue|
+     filtered_issues = issues.reject { |i| i[:html_url].split("/")[4] == "appeals-support" }
+     grouped_issues = filtered_issues.group_by do |issue|
       issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
       issue[:assignee][:login]
     end
@@ -33,6 +37,21 @@ class Github
     Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
   end
 
+   #Use hash to Keep issues created in past 7 days
+  def get_all_support_issues
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "all")
+    response.keep_if { |v| v[:created_at] >= 7.days.ago }
+  end 
+  
+  #Method to get the incident report
+   def get_all_incident_issues
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "open")
+    response.reject { |v| v[:created_at] >= 10.days.ago }
+  end 
+  
+
+
+ 
   private
 
   def get_team_info(team_name)
@@ -50,5 +69,6 @@ class Github
       Octokit.team_repositories(team_id)
     end.flatten
   end
-end
+ end
+
 

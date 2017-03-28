@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 gem 'rails'
 gem 'pg'
@@ -23,6 +23,12 @@ gem 'omniauth'
 gem 'omniauth-github'
 gem 'pry'
 
+# Excel
+gem 'axlsx_rails', '~> 0.4.0'
+gem 'axlsx', '~> 2.0', '>= 2.0.1'
+
+# Time 
+gem 'activesupport', '~> 5.0'
 # React
 gem "react_on_rails"
 
@@ -36,7 +42,6 @@ group :development, :test do
  
   gem 'byebug', platform: :mri
   gem 'dotenv-rails'
-  gem 'pry'
 end
 
 group :development do
