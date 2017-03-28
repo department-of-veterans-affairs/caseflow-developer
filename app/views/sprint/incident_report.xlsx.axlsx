@@ -2,10 +2,11 @@ wb = xlsx_package.workbook
 wb.add_worksheet(name: "Incident Report") do |sheet|
 	styles = sheet.styles
     style_header = styles.add_style :bg_color => "DEB340",:fg_color => "FF", :sz => 12, :b => true, :font_name =>"Garamond (Body)", :alignment => {:horizontal => :left}, :border => { :style => :thin,  :color => 'fffff', :edges => [:bottom] }
-    style_blue = styles.add_style :bg_color => "ffecb3", :border => { :style => :thin,     :color => 'fffff', :edges => [:top, :bottom, :left, :right] }
+    style_blue = styles.add_style :bg_color => "ffecb3", :border => { :style => :thin, :sz => 10, :color => 'fffff', :edges => [:top, :bottom, :left, :right] }
     style_red =  styles.add_style :bg_color => "ffd54f", :border => { :style => :thin,     :color => 'fffff',  :edges => [:top, :bottom, :left, :right] }
     style_yellow =  styles.add_style :bg_color => "ffe082", :border => { :style => :thin,  :color => 'fffff',:edges => [:top, :bottom, :left, :right ] }
     style_bright =  styles.add_style :bg_color => "ffab00", :border => { :style => :thin,  :color => 'fffff',:edges => [:top, :bottom, :left, :right] }
+    style_date =  styles.add_style(:num_fmt => Axlsx::NUM_FMT_YYYYMMDDHHMMSS, :bg_color => "ffab00", :border=>{:style => :thin, :color => "fffff", :edges => [:top, :bottom, :left, :right ]})
     style_border =  styles.add_style({:border => { :style => :thin, :color => 'fffff', :name => :right, :edges => [:bottom] }})
    
     #Heading
@@ -15,6 +16,6 @@ wb.add_worksheet(name: "Incident Report") do |sheet|
            iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
             iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "),
             iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
-            iss[:title], iss[:state],iss[:assignees].map{|assignee| assignee[:login]}.join(",")], :style => [style_blue, nil, nil, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow] 
+            iss[:title], iss[:state],iss[:assignees].map{|assignee| assignee[:login]}.join(",")], :style => [style_blue, style_date, nil, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow] 
     end
 end
