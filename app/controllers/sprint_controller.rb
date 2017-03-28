@@ -26,4 +26,15 @@ class SprintController < ApplicationController
     @github = Github.new
     @issues_by_project = @github.get_issues('CASEFLOW', "closed").group_by {|issue|  issue[:html_url].split("/")[4]}
   end
+
+  def weekly_report
+    @github = Github.new
+    @weekly_report = @github.get_all_support_issues
+    respond_to do |format|
+      format.html
+      format.xlsx {render xlsx: "report"}
+     end
+  end
+
+
 end

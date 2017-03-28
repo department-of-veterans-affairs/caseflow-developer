@@ -33,6 +33,12 @@ class Github
     Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
   end
 
+   #Use hash to Keep issues created in past 7 days
+  def get_all_support_issues
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "all")
+    response.keep_if { |v| v[:created_at] >= 7.days.ago }
+  end 
+
   private
 
   def get_team_info(team_name)
