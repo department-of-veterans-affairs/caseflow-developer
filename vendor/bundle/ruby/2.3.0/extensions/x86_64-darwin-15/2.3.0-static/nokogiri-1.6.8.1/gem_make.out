@@ -1,5 +1,5 @@
 current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/nokogiri-1.6.8.1/ext/nokogiri
-/Users/vhaisajoness/.rbenv/versions/2.3.0/bin/ruby -r ./siteconf20170324-6104-bk5a87.rb extconf.rb
+/Users/vhaisajoness/.rbenv/versions/2.3.0/bin/ruby -r ./siteconf20170328-14176-1r90tj6.rb extconf.rb
 checking if the C compiler accepts ... yes
 checking if the C compiler accepts -Wno-error=unused-command-line-argument-hard-error-in-future... no
 Building nokogiri using packaged libraries.
@@ -156,4 +156,4 @@ rm -rf /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0
 
 current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/nokogiri-1.6.8.1/ext/nokogiri
 make "DESTDIR=" install
-/usr/local/bin/ginstall -c -m 0755 nokogiri.bundle ./.gem.20170324-6104-1vbpw2y/nokogiri
+/usr/local/bin/ginstall -c -m 0755 nokogiri.bundle ./.gem.20170328-14176-78h1ci/nokogiri

@@ -1,5 +1,5 @@
 current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/debug_inspector-0.0.2/ext/debug_inspector
-/Users/vhaisajoness/.rbenv/versions/2.3.0/bin/ruby -r ./siteconf20170324-6104-1qrczr7.rb extconf.rb
+/Users/vhaisajoness/.rbenv/versions/2.3.0/bin/ruby -r ./siteconf20170328-14176-pusz3w.rb extconf.rb
 creating Makefile
 
 current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/debug_inspector-0.0.2/ext/debug_inspector
@@ -12,4 +12,4 @@ linking shared-object debug_inspector.bundle
 
 current directory: /Users/vhaisajoness/Documents/caseflow-developer/vendor/bundle/ruby/2.3.0/gems/debug_inspector-0.0.2/ext/debug_inspector
 make "DESTDIR=" install
-/usr/local/bin/ginstall -c -m 0755 debug_inspector.bundle ./.gem.20170324-6104-1y7g7x9
+/usr/local/bin/ginstall -c -m 0755 debug_inspector.bundle ./.gem.20170328-14176-1hv6orc
