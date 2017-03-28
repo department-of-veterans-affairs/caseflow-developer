@@ -36,5 +36,13 @@ class SprintController < ApplicationController
      end
   end
 
+ def incident_report
+    @github = Github.new
+     @incident_report = @github.get_all_incident_issues
+      respond_to do |format|
+      format.html
+      format.xlsx {render xlsx: "incident_report"}
+     end
+  end
 
 end

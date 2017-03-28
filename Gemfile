@@ -23,6 +23,10 @@ gem 'omniauth'
 gem 'omniauth-github'
 gem 'pry'
 
+# Excel
+gem 'axlsx_rails', '~> 0.4.0'
+gem 'axlsx', '~> 2.0', '>= 2.0.1'
+
 # React
 gem "react_on_rails"
 

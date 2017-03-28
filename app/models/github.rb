@@ -1,4 +1,9 @@
 class Github
+
+  LABELS = ["Bug", "Feature Request", "Performance", "Training Request"]
+  PRODUCT_LABELS = ["Dispatch", "eFolder", "eReader", "eReader", "Certification", "Caseflow System"]
+  REPORT_LABELS = ["NSD", "Source - Feedback","DSVA Member","Phone"]
+
   GITHUB_TEAM_IDS = {
     APPEALS_PM: 2221656,
     CASEFLOW: 2221658
@@ -39,6 +44,12 @@ class Github
     response.keep_if { |v| v[:created_at] >= 7.days.ago }
   end 
 
+   #Method to get the incident report
+  def get_all_incident_issues
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "open")
+    response.reject { |v| v[:created_at] >= 10.days.ago }
+  end 
+  
   private
 
   def get_team_info(team_name)
