@@ -18,6 +18,6 @@ wb.add_worksheet(name: "Weekly Report") do |sheet|
            iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
             iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "),
             iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
-            iss[:title], iss[:state],iss[:assignees].map{|assignee| assignee[:login]}.join(",")] ,:style => Axlsx::STYLE_THIN_BORDER, :style => [style_blue, style_date, style_date, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow] 
+            iss[:title], iss[:state],iss[:assignees].map{|assignee| assignee[:login]}.join(",")],:height => 25,:style => Axlsx::STYLE_THIN_BORDER, :style => [style_blue, style_date, style_date, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow] 
     end
 end
