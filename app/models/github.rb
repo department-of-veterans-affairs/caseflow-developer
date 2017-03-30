@@ -55,8 +55,8 @@ class Github
   
   #Use hash to get all support issues 
   def get_all_master_issues
-    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", direction: "asc", state: "all")
-    response.keep_if { |v| v[:created_at] - v[:closed_at].to_i}
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", direction: "asc", state: "open")
+    
   end 
 
   private

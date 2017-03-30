@@ -1,23 +1,56 @@
 col_widths= [10,12,12,10,12] 
+# d1 = [:created_at]
+# d2 = [:closed_at]
 wb = xlsx_package.workbook
 wb.add_worksheet(name: "Weekly Report") do |sheet|
 	styles = sheet.styles
-    style_header = styles.add_style :bg_color => "DEB340",:fg_color => "FF", :sz => 12, :b => true, :font_name =>"Garamond (Body)", :alignment => {:horizontal => :left}, :border => { :style => :thin,  :color => 'fffff', :edges => [:bottom] }
-    style_blue = styles.add_style :bg_color => "ffecb3", :border => { :style => :thin,     :color => 'fffff', :edges => [:top, :bottom, :left, :right] }
-    style_red =  styles.add_style :bg_color => "DEB340", :border => { :style => :thin,     :color => 'fffff',  :edges => [:top, :bottom, :left, :right] }
-    style_yellow =  styles.add_style :bg_color => "ffe082", :border => { :style => :thin,  :color => 'fffff',:edges => [:top, :bottom, :left, :right ] }
-    style_bright =  styles.add_style :bg_color => "ffab00", :border => { :style => :thin,  :color => 'fffff',:edges => [:top, :bottom, :left, :right] }
-    style_border =  styles.add_style({:border => { :style => :thin, :color => 'fffff', :name => :right, :edges => [:bottom] }})
+    style_header = styles.add_style :bg_color => "DEB340",
+                                    :fg_color => "FF",
+                                    :sz => 12,
+                                    :b => true,
+                                    :font_name =>"Garamond (Body)",
+                                    :alignment => {:horizontal => :left},
+                                    :border => { :style => :thin, 
+                                                 :color => 'fffff',
+                                                 :edges => [:bottom] }
+    style_blue = styles.add_style :bg_color => "ffecb3",
+                                   :border => { :style => :thin, 
+                                    :color => 'fffff', 
+                                    :edges => [:top, :bottom, :left, :right] }
+    style_red =  styles.add_style :bg_color => "DEB340",
+                                  :border => { :style => :thin, 
+                                    :color => 'fffff', 
+                                   :edges => [:top, :bottom, :left, :right] }
+    style_yellow =  styles.add_style :bg_color => "ffe082", 
+                                 :border => { :style => :thin,  
+                                  :color => 'fffff',
+                                  :edges => [:top, :bottom, :left, :right ] }
+    style_bright =  styles.add_style :bg_color => "ffab00",
+                                 :border => { :style => :thin,  
+                                  :color => 'fffff',
+                                  :edges => [:top, :bottom, :left, :right] }
+    style_border =  styles.add_style({:border => { :style => :thin,
+                                :color => 'fffff', :name => :right,
+                                  :edges => [:bottom] }})
     style_date =  styles.add_style(:num_fmt => Axlsx::NUM_FMT_YYYYMMDDHHMMSS, :bg_color => "ffe082", :border=>{:style => :thin, :color => "fffff", :edges => [:top, :bottom, :left, :right ]})
    
     #Heading
 	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], :style => style_header ,:height => 25, :widths=> [10,:ignore, 10, 10,:auto]
    sheet.column_widths *col_widths
       @master_report.each do |iss|
-      sheet.add_row [ iss[:number], iss.created_at.localtime, iss[:closed_at], iss[:created_at] - iss[:closed_at].to_i, 
-           iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
-            iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "),
-            iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
-            iss[:title],iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::STATE_LABELS).join(", "), iss[:assignees].map{|assignee| assignee[:login]}.join(",")],:height => 25, :font_name =>"Garamond (Body)", :style => Axlsx::STYLE_THIN_BORDER, :style => [style_blue, style_date, style_date, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow ] 
+       if iss[:state] == "open"
+           daysopen = (Date.today - iss[:created_at].to_date).to_i
+            else 
+          daysopen = iss([:closed_at] - [:created_at]).to_i
+          end
+      sheet.add_row [iss[:number], 
+                      iss.created_at.in_time_zone("Eastern Time (US & Canada)").try(:strftime, "%m/%d/%y %T"),
+                      iss.closed_at.try(:strftime, "%m/%d/%y %T"), 
+                      daysopen,
+                     iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
+                     iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "),
+                     iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
+                     iss[:title],
+                     iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::STATE_LABELS).join(", "), iss[:assignees].map{|assignee| assignee[:login]}.join(",")],:height => 25,  :style => Axlsx::STYLE_THIN_BORDER, :style => [style_blue, style_date, style_date,  style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow ] 
     end
 end

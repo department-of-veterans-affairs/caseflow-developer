@@ -14,10 +14,10 @@ wb.add_worksheet(name: "Weekly Report") do |sheet|
 	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], :style => style_header ,:height => 25, :widths=> [10,:ignore, 10, 10,:auto]
    sheet.column_widths *col_widths
       @weekly_report.each do |iss|
-      sheet.add_row [ iss[:number], iss.created_at.localtime, iss[:closed_at], (Date.today - iss[:created_at].to_date).to_i, 
+      sheet.add_row [ iss[:number], iss.created_at.in_time_zone("Eastern Time (US & Canada)").try(:strftime, "%m/%d/%y %T") , iss.closed_at.try(:strftime, "%m/%d/%y %T"), (Date.today - iss[:created_at].to_date).to_i, 
            iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
             iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "),
             iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
-            iss[:title],iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::STATE_LABELS).join(", "), iss[:assignees].map{|assignee| assignee[:login]}.join(",")],:height => 25, :font_name =>"Garamond (Body)", :style => Axlsx::STYLE_THIN_BORDER, :style => [style_blue, style_date, style_date, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow ] 
+            iss[:title],iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::STATE_LABELS).join(", "), iss[:assignees].map{|assignee| assignee[:login]}.join(",")],:height => 25, :style => Axlsx::STYLE_THIN_BORDER, :style => [style_blue, style_date, style_date, style_red, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow ] 
     end
 end
