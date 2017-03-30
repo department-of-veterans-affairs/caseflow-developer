@@ -42,5 +42,13 @@ class SprintController < ApplicationController
       format.xlsx {render xlsx: "incident_report"}
      end
   end
-
+ 
+ def master_report
+    @github = Github.new
+     @master_report = @github.get_all_master_issues
+      respond_to do |format|
+      format.html
+      format.xlsx {render xlsx: "master_report"}
+     end
+  end
 end

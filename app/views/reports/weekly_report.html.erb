@@ -6,19 +6,21 @@ Download:
 <div><%= link_to 'Weekly Report .xlsx', sprint_weekly_report_path(format: :xlsx) %></div>
 <br>
 <div><%= link_to 'Incident Report .xlsx', sprint_incident_report_path(format: :xlsx) %></div>
+<br>
+<div><%= link_to 'Master Report .xlsx', sprint_master_report_path(format: :xlsx) %></div>
 </p>
 
  <table  class="usa-table-borderless cf-table-borderless">
       <tr>
-        <th data-field="number">Number</th>
+        <th data-field="number">Issue #</th>
         <th data-field="id">Date</th>
         <th data-field="description">Summary</th>
         <th data-field="labels">Days Open</th>
         <th data-field="status">State</th>
-        <th data-field="labels">closed</th>
+        <th data-field="labels">Closed</th>
         <th data-field="labels">Issue Type</th>
         <th data-field="labels">Product</th>
-         <th data-field="labels">Report</th>
+         <th data-field="labels">Report Method</th>
       </tr>
   <% @weekly_report.group_by {|issue| }.each do |group, issues| %>
     <h2>
@@ -30,7 +32,7 @@ Download:
         <%= issue[:number]  %>
       </td>
       <td>
-        <%= issue.created_at.localtime%>
+        <%= issue.created_at.in_time_zone("Eastern Time (US & Canada)").try(:strftime, "%m/%d/%y %T" )%>
       </td>
       <td>
         <%= issue[:title] %>
@@ -39,10 +41,10 @@ Download:
         <%= (Date.today - issue[:created_at].to_date).to_i %>
       </td>
       <td>
-        <%= issue[:state] %>
+       <%=issue[:state]%>
       </td>
       <td>
-        <%= issue[:closed_at] %>
+        <%= issue.closed_at.in_time_zone("Eastern Time (US & Canada)").try(:strftime, "%m/%d/%y %H:%M:%S") %>
       </td>
        <td>
         <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", ") %>
