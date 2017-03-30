@@ -4,7 +4,9 @@ class Github
   PRODUCT_LABELS = ["Dispatch", "eFolder", "eReader", "eReader", "Certification", "Caseflow System"]
   REPORT_LABELS = ["NSD", "Source - Feedback","DSVA Member","Phone"]
   RESOLUTION_LABELS =["Resolution Team - Tier 2", "Resolution Team - Tier 3", "Resolution Team - Training"]
-
+  STATE_LABELS = ["In Progress", "Blocked", "Closed"]
+  
+  
   GITHUB_TEAM_IDS = {
     APPEALS_PM: 2221656,
     CASEFLOW: 2221658
@@ -51,6 +53,12 @@ class Github
     response.reject { |v| v[:created_at] >= 10.days.ago }
   end 
   
+  #Use hash to get all support issues 
+  def get_all_master_issues
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", direction: "asc", state: "all")
+    response.keep_if { |v| v[:created_at] - v[:closed_at].to_i}
+  end 
+
   private
 
   def get_team_info(team_name)

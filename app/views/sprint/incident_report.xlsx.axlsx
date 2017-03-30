@@ -18,8 +18,8 @@ wb.add_worksheet(name: "Incident Report") do |sheet|
            iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", "),
             iss[:labels].empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", "),
             iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", "),
-            iss[:title], iss[:state],
-            iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::RESOLUTION_LABELS).join(", ")],:height => 25, :style => Axlsx::STYLE_THIN_BORDER, :style => [style_blue, style_date, style_blue, style_header, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow, style_blue, style_yellow] 
+            iss[:title], iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::STATE_LABELS).join(", "),
+            iss.labels.empty? ? "" : (iss[:labels].collect{ |i| i[:name] } & Github::RESOLUTION_LABELS).join(", ")],:height => 25, :font_name =>"Garamond (Body)", :style => Axlsx::STYLE_THIN_BORDER, :style => [style_blue, style_date, style_blue, style_header, style_bright, style_yellow, style_blue, style_bright, style_blue, style_yellow, style_blue, style_yellow, style_blue] 
       
     end
 end
