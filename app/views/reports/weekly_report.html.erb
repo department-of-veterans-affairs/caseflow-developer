@@ -44,7 +44,7 @@ Download:
        <%=issue[:state]%>
       </td>
       <td>
-        <%= issue.closed_at.in_time_zone("Eastern Time (US & Canada)").try(:strftime, "%m/%d/%y %H:%M:%S") %>
+        <%= issue.closed_at.try(:strftime, "%m/%d/%y %H:%M:%S") %>
       </td>
        <td>
         <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", ") %>
