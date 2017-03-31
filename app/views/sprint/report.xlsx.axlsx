@@ -25,7 +25,10 @@ wb.add_worksheet(name: "Weekly Report") do |sheet|
                                   :edges => [:top, :bottom, :left, :right ]})
    
     #Heading
-	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], :style => style_header ,:height => 25, :widths=> [10,:ignore, 10, 10,:auto]
+	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], 
+                           :style => style_header,
+                           :height => 25, 
+                           :widths=> [10,:ignore, 10, 10,:auto]
    sheet.column_widths *col_widths
       @weekly_report.each do |iss|
         if iss[:state] == "open"

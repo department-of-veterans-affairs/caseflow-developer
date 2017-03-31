@@ -35,7 +35,10 @@ wb.add_worksheet(name: "Weekly Report") do |sheet|
     style_date =  styles.add_style(:num_fmt => Axlsx::NUM_FMT_YYYYMMDDHHMMSS, :bg_color => "ffe082", :border=>{:style => :thin, :color => "fffff", :edges => [:top, :bottom, :left, :right ]})
    
     #Heading
-	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"], :style => style_header ,:height => 25, :widths=> [10,:ignore, 10, 10,:auto]
+	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Assignees"],
+                              :style => style_header,
+                              :height => 25, 
+                              :widths=> [10,:ignore, 10, 10,:auto]
    sheet.column_widths *col_widths
       @master_report.each do |iss|
         if iss[:state] == "open"

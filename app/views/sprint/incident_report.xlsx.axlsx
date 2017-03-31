@@ -23,7 +23,10 @@ wb.add_worksheet(name: "Incident Report") do |sheet|
     style_border =  styles.add_style({:border => { :style => :thin, :color => 'fffff', :edges => [:bottom] }})
    
     #Heading
-	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Resolution Team", "Est. Completion Date"], :style => style_header ,:height => 25, :widths=> [10,:ignore, 10, 10,:auto]
+	 sheet.add_row ["Issue #", "Date Recieved","Date Completed", "Days Open", "Product","Report Method","Issue Type", "Issue Summary","Status","Resolution Team", "Est. Completion Date"],
+                            :style => style_header,
+                            :height => 25, 
+                            :widths=> [10,:ignore, 10, 10,:auto]
      sheet.column_widths *col_widths
       @incident_report.each do |iss|
       sheet.add_row [ iss[:number],
