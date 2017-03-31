@@ -55,8 +55,7 @@ class Github
   
   #Use hash to get all support issues 
   def get_all_master_issues
-    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", direction: "asc", state: "all")
-    
+     Octokit.list_issues("department-of-veterans-affairs/appeals-support", direction: "asc", state: "all")
   end 
 
   private
