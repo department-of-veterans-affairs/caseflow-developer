@@ -43,13 +43,13 @@ class Github
 
    #Use hash to Keep issues created in past 7 days
   def get_all_support_issues
-    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "all")
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", direction: "asc", state: "all")
     response.keep_if { |v| v[:created_at] >= 7.days.ago }
   end 
 
    #Method to get the incident report
   def get_all_incident_issues
-    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", filter: "created", state: "open")
+    response = Octokit.list_issues("department-of-veterans-affairs/appeals-support", direction: "asc", state: "open")
     response.reject { |v| v[:created_at] >= 10.days.ago }
   end 
   
