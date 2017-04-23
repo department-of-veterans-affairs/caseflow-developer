@@ -1,0 +1,51 @@
+
+<div><%= link_to 'Notes Report .xlsx', sprint_notes_report_path(format: :xlsx, date_since: @date_since), method: :post %></div>
+<br>
+<div class="cf-table-wrap">
+  <table class="usa-table-borderless cf-table-borderless">
+    <thead>
+      <tr>
+        <th data-field="id">#</th>
+        <th data-field="Title">Title</th>
+        <th data-field="status">Stage</th>
+        <th data-field="Product">Product</th>
+        <th data-field="Team">Team</th>
+        <th data-field="Type">Type</th>
+        <th data-field="date_plan">Date Planned</th>
+        <th data-field="date_close">Date Closed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% $ISS_ARR.each do |iss_num, issue| %>
+        <tr style="<%= ('background-color: #fff3e0' if issue[:close_date]) %>">
+          <td>
+            <a href="<%= issue[:link] %>">
+              <%= iss_num %>
+            </a>
+          </td>
+          <td>
+            <%= issue.title %>
+          </td>
+          <td>
+            <%= issue.status.join(",") %>
+          </td>
+          <td>
+            <%= issue.product.join(",") %>
+          </td>
+          <td>
+            <%= issue.team.join(",") %>
+          </td>
+          <td>
+            <%= issue.type.join(",") %>
+          </td>
+          <td>
+            <%= issue.date_planned %>
+          </td>
+          <td>
+            <%= issue.close_date %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

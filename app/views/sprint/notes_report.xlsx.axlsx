@@ -1,43 +1,39 @@
 # Creating the spreadsheet
-Axlsx::Package.new do |rel_notes|
-rel_notes.workbook do |wb|
-styles = wb.styles
-style_header = styles.add_style :bg_color => "83992A", :sz => 16, :b => true, :alignment => {:horizontal => :left}
-style_altrow_odd = styles.add_style :bg_color => "D5E39B", :sz => 12, :alignment => {:horizontal => :left}
-style_altrow_even = styles.add_style :bg_color => "EAF1CD", :sz => 12, :alignment => {:horizontal => :left}
+wb = xlsx_package.workbook
 
 wb.add_worksheet(:name => "#{Date.today}") do |sheet1|
-sheet1.add_row ["Source: ",
-repos.map {|repo| repo.split("\/").last }.join(","),
-"Collected Issues Since:",
-date_since
-], :style => style_header
-sheet1.add_row ["Issue #", "Title", "Stage", "Product", "Team", "Type", "Date Planned", "Date Closed"], :style => style_header
+  styles = sheet1.styles
+  style_header = styles.add_style :bg_color => "83992A", :sz => 16, :b => true, :alignment => {:horizontal => :left}, :sz => 10, :font_name => 'Calibri'
+  style_altrow_odd = styles.add_style :bg_color => "D5E39B", :sz => 12, :alignment => {:horizontal => :left}, :sz => 10, :font_name => 'Calibri'
+  style_altrow_even = styles.add_style :bg_color => "EAF1CD", :sz => 12, :alignment => {:horizontal => :left}, :sz => 10, :font_name => 'Calibri'
+  sheet1.add_row ["Source: ",
+                  @repos.map {|repo| repo.split("\/").last }.join(","),
+                  "Collected Issues Since:",
+                  @date_since
+                 ], :style => style_header
+  sheet1.add_row ["Issue #", "Title", "Stage", "Product", "Team", "Type", "Date Planned", "Date Closed"], :style => style_header
 
-index=1
-$ISS_ARR.each do |iss_num, iss_data|
+  index=1
+  $ISS_ARR.each do |iss_num, iss_data|
 
-# adding the row
-unless iss_data.status == ["New"]
-iss_number = iss_data.link.split("\/").last.to_s
-sheet1.add_row([ iss_number,
-iss_data.title,
-iss_data.status.join(","),
-iss_data.product.join(","),
-iss_data.team.join(","),
-iss_data.type.join(","),
-iss_data.date_planned,
-iss_data.close_date ], :style => ( index.even? ? style_altrow_even : style_altrow_odd ))
-index += 1
+    # adding the row
+    unless iss_data.status == ["New"]
+      iss_number = iss_data.link.split("\/").last.to_s
+      sheet1.add_row([ iss_number,
+                       iss_data.title,
+                       iss_data.status.join(","),
+                       iss_data.product.join(","),
+                       iss_data.team.join(","),
+                       iss_data.type.join(","),
+                       iss_data.date_planned,
+                       iss_data.close_date ], :style => ( index.even? ? style_altrow_even : style_altrow_odd ))
+      index += 1
 
-# hacky way of finding the first cell and adding the Gtihub link for the issue
-first_col = sheet1.rows.map { |row| row.cells[0] }
-f_cell = first_col.detect { |cur_cell| cur_cell.value.to_s == iss_number }
-puts "#{f_cell.value} from #{iss_data.product}"
-sheet1.add_hyperlink(:location => iss_data.link, :ref => f_cell)
-end
-end
-end
-end
-rel_notes.serialize "relnotes_#{Date.today}.xlsx"
+      # hacky way of finding the first cell and adding the Gtihub link for the issue
+      first_col = sheet1.rows.map { |row| row.cells[0] }
+      f_cell = first_col.detect { |cur_cell| cur_cell.value.to_s == iss_number }
+      puts "#{f_cell.value} from #{iss_data.product}"
+      sheet1.add_hyperlink(:location => iss_data.link, :ref => f_cell)
+    end
+  end
 end

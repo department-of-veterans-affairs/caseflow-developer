@@ -53,33 +53,18 @@ class SprintController < ApplicationController
   end
 
   def notes_report
-    repos = [
+    @repos = [
       'department-of-veterans-affairs/caseflow',
       'department-of-veterans-affairs/caseflow-efolder',
       'department-of-veterans-affairs/caseflow-feedback',
       'department-of-veterans-affairs/caseflow-commons',
       'department-of-veterans-affairs/appeals-deployment'
     ]
-    date_since = "17/04/2017"
-    client = Octokit::Client.new(
-      login: 'kierachell',
-      password: ENV['GITHUB_TOKEN'],
-      auto_paginate: true
-    )
+    @github = Github.new
 
-    qa_issues = []
-    repos.each do |repo_name|
-      puts "Getting issues from #{repo_name}"
-      qa_issues.concat(
-        client.list_issues(
-          repo_name.to_s,
-          since: date_since.to_s,
-          sort: 'updated',
-          direction: 'desc',
-          state: 'all')
-      )
-    end
-
+    @date_since = params[:date_since]
+    @notes_issues = @github.get_sprint_issues(@repos,@date_since, @date_until)
+    
     $ISS_ARR = {}
     $ISS_STATUS = {"Triage" => "Triage",
                    "blocked" => "Blocked",
@@ -101,7 +86,7 @@ class SprintController < ApplicationController
     $ISS_TYPE = {"bug" => "Bug",
                  "bug-ui" => "UI Bug",
                  "tech-improvement" => "Technical"}
-    qa_issues.each do |iss|
+    @notes_issues.map do |iss|
       if iss[:html_url].include?("\/issues\/")
         iss_num = iss[:number]
         cur_issue = OpenStruct.new(title: nil,
@@ -147,7 +132,7 @@ class SprintController < ApplicationController
         cur_issue.status = ["New"] if cur_issue.status.empty?
 
         # get intake date
-        issue_events = client.issue_events("#{iss[:url].split("\/")[4]}/#{iss[:url].split("\/")[5]}", iss_num)
+        issue_events = @github.get_events_for_issue(iss)
         issue_events.each do |event|
           if event[:event] == "labeled"
             if event[:label][:name] == "Current Sprint"
@@ -164,7 +149,7 @@ class SprintController < ApplicationController
             end
           end
         end
-        if cur_issue.date_planned.nil?
+        if cur_issue.date_planned.nil? || cur_issue.status.include?("New")
           next
         end
 
