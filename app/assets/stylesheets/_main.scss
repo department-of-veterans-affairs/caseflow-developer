@@ -140,3 +140,13 @@
   max-height: 100%;
   overflow-y: auto;
 }
+
+.cf-block {
+    margin: 0.5em;
+    vertical-align: top;
+    display: inline-block;
+}
+.cf-block-l {
+    @extend .cf-block;
+    margin-right: 1em;
+}

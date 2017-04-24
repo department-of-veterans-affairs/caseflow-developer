@@ -56,7 +56,25 @@ class Github
   #Use hash to get all support issues 
   def get_all_master_issues
      Octokit.list_issues("department-of-veterans-affairs/appeals-support", direction: "asc", state: "all")
-  end 
+  end
+
+  def get_sprint_issues(repos, date_since, date_until)
+    Octokit.auto_paginate = true
+    @issues = []
+    repos.each do |repo_name|
+      @issues.concat(Octokit.list_issues(
+        repo_name.to_s,
+        since: date_since.to_s,
+        sort: 'updated',
+        direction: 'desc',
+        state: 'all'))
+    end
+    return @issues
+  end
+
+  def get_events_for_issue(iss)
+    Octokit.issue_events("#{iss[:url].split("\/")[4]}/#{iss[:url].split("\/")[5]}", iss[:number])
+  end
 
   private
 

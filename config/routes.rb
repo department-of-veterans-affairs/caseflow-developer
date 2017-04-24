@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   get "/sprint/weekly_report" => "sprint#weekly_report"
   get "/sprint/incident_report" => "sprint#incident_report"
   get "/sprint/master_report" => "sprint#master_report"
+  post "/sprint/notes_report" => "sprint#notes_report"
+  get "/spring/notes_report" => "sprint#notes_report"
   get 'reports', to:'reports#weekly_report'
 
   root "sprint#standup"

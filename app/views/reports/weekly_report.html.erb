@@ -1,17 +1,26 @@
-<% unless @weekly_report.nil? %>
-  <h2>Weekly Report</h2>
-<% end %>
-<p>
-Download:
-<div><%= link_to 'Weekly Report .xlsx', sprint_weekly_report_path(format: :xlsx) %></div>
-<br>
-<div><%= link_to 'Incident Report .xlsx', sprint_incident_report_path(format: :xlsx) %></div>
-<br>
-<div><%= link_to 'Master Report .xlsx', sprint_master_report_path(format: :xlsx) %></div>
-</p>
+<div> </div>
 
- <table  class="usa-table-borderless cf-table-borderless">
-      <tr>
+<span class="cf-block-l">
+    <h4>Support Reports:</h4>
+    <br>
+    <div><%= link_to 'Weekly Report .xlsx', sprint_weekly_report_path(format: :xlsx) %></div>
+    <br>
+    <div><%= link_to 'Incident Report .xlsx', sprint_incident_report_path(format: :xlsx) %></div>
+    <br>
+    <div><%= link_to 'Master Report .xlsx', sprint_master_report_path(format: :xlsx) %></div>
+</span>
+
+<span class="cf-block">
+    <%= form_tag 'sprint/notes_report' do %>
+	<h4>Sprint Report:</h4>
+	Start Date:
+	<%= date_field_tag 'date_since', "#{Date.today-1}"  %>
+	<div><%= submit_tag 'Submit' %></div>
+    <% end %>
+</span>
+
+<table  class="usa-table-borderless cf-table-borderless">
+    <tr>
         <th data-field="number">Issue #</th>
         <th data-field="id">Date</th>
         <th data-field="description">Summary</th>
@@ -20,44 +29,44 @@ Download:
         <th data-field="labels">Closed</th>
         <th data-field="labels">Issue Type</th>
         <th data-field="labels">Product</th>
-         <th data-field="labels">Report Method</th>
-      </tr>
-  <% @weekly_report.group_by {|issue| }.each do |group, issues| %>
-    <h2>
-      <%= group.to_s  %>
-    </h2>
-    <tr class="list-<%= group %>"></tr>
-    <tr><% issues.each do |issue|  %>
-      <td>
-        <%= issue[:number]  %>
-      </td>
-      <td>
-        <%= issue.created_at.in_time_zone("Eastern Time (US & Canada)").try(:strftime, "%m/%d/%y %T" )%>
-      </td>
-      <td>
-        <%= issue[:title] %>
-      </td>
-      <td>
-        <%= (Date.today - issue[:created_at].to_date).to_i %>
-      </td>
-      <td>
-       <%=issue[:state]%>
-      </td>
-      <td>
-        <%= issue.closed_at.try(:strftime, "%m/%d/%y %H:%M:%S") %>
-      </td>
-       <td>
-        <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", ") %>
-      </td>
-       <td>
-        <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", ") %>
-      </td>
-       <td>
-        <%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", ") %>
-      </td>
-      </tr>
+        <th data-field="labels">Report Method</th>
+    </tr>
+    <% @weekly_report.group_by {|issue| }.each do |group, issues| %>
+	<h2>
+	    <%= group.to_s  %>
+	</h2>
+	<tr class="list-<%= group %>"></tr>
+	<tr><% issues.each do |issue|  %>
+	    <td>
+		<%= issue[:number]  %>
+	    </td>
+	    <td>
+		<%= issue.created_at.in_time_zone("Eastern Time (US & Canada)").try(:strftime, "%m/%d/%y %T" )%>
+	    </td>
+	    <td>
+		<%= issue[:title] %>
+	    </td>
+	    <td>
+		<%= (Date.today - issue[:created_at].to_date).to_i %>
+	    </td>
+	    <td>
+		<%=issue[:state]%>
+	    </td>
+	    <td>
+		<%= issue.closed_at.try(:strftime, "%m/%d/%y %H:%M:%S") %>
+	    </td>
+	    <td>
+		<%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::LABELS).join(", ") %>
+	    </td>
+	    <td>
+		<%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::PRODUCT_LABELS).join(", ") %>
+	    </td>
+	    <td>
+		<%= issue[:labels].empty? ? "" : (issue[:labels].collect{ |i| i[:name] } & Github::REPORT_LABELS).join(", ") %>
+	    </td>
+	</tr>
+	<% end %>
     <% end %>
-  <% end %>
- 
+    
 </table>
 
