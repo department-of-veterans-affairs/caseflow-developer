@@ -127,7 +127,7 @@ class SprintController < ApplicationController
         # set closed date
         if iss[:state] == "closed"
           cur_issue.status = ["Done"]
-          cur_issue.close_date = iss[:updated_at].strftime("%m/%d/%Y")
+          cur_issue.close_date = iss[:updated_at].strftime("%-m/%-d/%Y")
         end
         cur_issue.status = ["New"] if cur_issue.status.empty?
 
@@ -136,7 +136,7 @@ class SprintController < ApplicationController
         issue_events.each do |event|
           if event[:event] == "labeled"
             if event[:label][:name] == "Current Sprint"
-              cur_issue.date_planned = event[:created_at].strftime("%m/%d/%Y")
+              cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
             end
           end
         end
@@ -144,7 +144,7 @@ class SprintController < ApplicationController
           issue_events.each do |event|
             if event[:event] == "labeled"
               if event[:label][:name] == "In Progress"
-                cur_issue.date_planned = event[:created_at].strftime("%m/%d/%Y")
+                cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
               end
             end
           end
