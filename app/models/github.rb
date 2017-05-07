@@ -1,7 +1,7 @@
 class Github
 
-  LABELS = ["Bug", "Feature Request", "Performance", "Training Request"]
-  PRODUCT_LABELS = ["Dispatch", "eFolder", "eReader", "eReader", "Certification", "Caseflow System"]
+  LABELS = ["Bug", "Feature Request", "Performance", "Training Request", "Discussion", "Test"]
+  PRODUCT_LABELS = ["Dispatch", "eFolder", "Reader", "Certification", "Caseflow System"]
   REPORT_LABELS = ["NSD", "Source - Feedback","DSVA Member","Phone"]
   RESOLUTION_LABELS =["Resolution Team - Tier 2", "Resolution Team - Tier 3", "Resolution Team - Training"]
   STATE_LABELS = ["In Progress", "Blocked", "Closed"]
