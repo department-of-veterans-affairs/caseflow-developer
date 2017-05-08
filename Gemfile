@@ -4,6 +4,8 @@ gem 'rails'
 gem 'pg'
 gem 'redis'
 
+gem 'rack', '~> 2.0', '>= 2.0.1'
+
 gem 'puma'
 
 gem 'sass-rails'
