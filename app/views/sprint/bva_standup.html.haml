@@ -1,6 +1,6 @@
 %br
 .row
-  - Hash[ @bva_open_by_assignee.sort_by { |key, val| key.to_s } ].each do |github_name, issues|
+  - Hash[ @bva_standup_report.sort_by { |key, val| key.to_s } ].each do |github_name, issues|
     .row
       %div
         %img{:alt => "", :src => issues.first[:assignee][:avatar_url], :style => "border-radius: 50%; height: 100px;width: 100px;overflow: hidden;"}/
@@ -9,15 +9,4 @@
           (#{issues.first[:assignee][:login]})
     = render "issues_table", issues: issues
     %br/
-  - unless @bva_open_by_assignee_optional.count == 0
-    %h3 Optional Atteendees
-    %br
-    - Hash[ @bva_open_by_assignee_optional.sort_by { |key, val| key.to_s } ].each do |github_name, issues|
-      .row
-        %div
-          %img{:alt => "", :src => issues.first[:assignee][:avatar_url], :style => "border-radius: 50%; height: 100px;width: 100px;overflow: hidden;"}/
-          %h2{:style => "display: inline-block; padding-left: 15px;"}
-            = github_name
-            (#{issues.first[:assignee][:login]})
-      = render "issues_table", issues: issues
-      %br/
+  
