@@ -37,6 +37,21 @@ class Github
     end
   end
 
+
+  #BVA Technologies
+  def get_bva_issues()
+      issues = Octokit.list_issues("department-of-veterans-affairs/bva-technology", direction: 'desc')
+      filtered_issues = issues.select { |i| i[:state] =='open'}
+      grouped_issues = filtered_issues.group_by do |issue|
+      issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
+      issue[:assignee][:login]
+    end
+   #Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
+    grouped_issues.transform_keys do |key|
+    Octokit.user(key)[:name]
+   end 
+  end
+
   def get_product_support_issues
     Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
   end
