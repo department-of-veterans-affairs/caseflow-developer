@@ -22,7 +22,7 @@ GIT
       sass (~> 3.4)
 
 GEM
-  remote: https://rubygems.org/
+  remote: http://rubygems.org/
   specs:
     actioncable (5.1.1)
       actionpack (= 5.1.1)
