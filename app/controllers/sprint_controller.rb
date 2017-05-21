@@ -22,7 +22,7 @@ class SprintController < ApplicationController
 
   #BVA Technology
  def bva_standup
-     @github = Github.new
+     @github = Github.new 
      @bva_standup_report = @github.get_bva_issues
  end
 

@@ -1,3 +1,9 @@
+%h4 Daily Standup Report
+%blockquote
+  %p
+    Only issues that are marked as
+    %strong open
+    are shown.
 %br
 .row
   - Hash[ @bva_standup_report.sort_by { |key, val| key.to_s } ].each do |github_name, issues|
