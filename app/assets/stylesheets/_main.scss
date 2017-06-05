@@ -150,3 +150,19 @@
     @extend .cf-block;
     margin-right: 1em;
 }
+
+.cf-ci-success-report {
+  &.safe {
+    color: $color-green;
+  }
+
+  &.flakey {
+    color: #F0835e;
+  }
+
+  &.dangerous {
+    color: #e31c3d;
+  }
+
+  margin-bottom: 3rem;
+}
