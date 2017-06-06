@@ -2,7 +2,6 @@ class SprintController < ApplicationController
   before_action :authenticate_user!
 
   def standup
-    @ci = CI.new
     @github = Github.new
     @in_progress_by_assignee = @github.issues_by_assignee(params[:team], "In Progress")
 

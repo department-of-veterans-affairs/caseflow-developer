@@ -1,10 +1,6 @@
 // Add scss includes explicitly here.
 @import 'caseflow_main';
 
-main.usa-grid {
-   max-width: 1200px;
-}
-
 .chip {
     padding: 5px 5px;
     border-radius: 3px;
@@ -153,20 +149,4 @@ main.usa-grid {
 .cf-block-l {
     @extend .cf-block;
     margin-right: 1em;
-}
-
-.cf-ci-success-report {
-  &.safe {
-    color: $color-green;
-  }
-
-  &.flakey {
-    color: #F0835e;
-  }
-
-  &.dangerous {
-    color: #e31c3d;
-  }
-
-  margin-bottom: 3rem;
 }
