@@ -25,7 +25,9 @@ class Github
 
   def issues_by_assignee(team_name, *labels)
     issues = get_issues(team_name,'open', labels)
-    filtered_issues = issues.reject { |i| i[:html_url].split("/")[4] == "appeals-support" }
+    filtered_issues = issues.reject do |issue| 
+      issue[:html_url].split("/")[4] == "appeals-support" || (issue[:assignee].nil? && issue[:title] =~ /wip/i)
+    end
     grouped_issues = filtered_issues.group_by do |issue|
       issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
       issue[:assignee][:login]
