@@ -10,28 +10,26 @@ class CI
     end
   end
 
-  def init_failed
-    @init_failed
-  end
+  attr_reader :init_failed
 
   def success_rate
-    master_builds = @caseflow.each_build.select {|build| build.branch_info === 'master'}
-    @success_rate ||= master_builds.select {|build| build.passed?}.count / master_builds.size.to_f
+    unless @success_rate
+      master_builds = @caseflow.each_build.select {|build| build.branch_info === 'master'}
+      @success_rate ||= master_builds.select {|build| build.passed?}.count / master_builds.size.to_f
+    end
+
+    @success_rate
   end
 
   def success_category
     if @init_failed
-      return 'init-failed'
+      'init-failed'
+    elsif success_rate >= 0.95
+      'safe'
+    elsif success_rate >= 0.7
+      'flakey'
+    else
+      'dangerous'
     end
-
-    if success_rate >= 0.95
-      return 'safe'
-    end
-
-    if success_rate >= 0.7
-      return 'flakey'
-    end
-
-    'dangerous'
   end
 end
