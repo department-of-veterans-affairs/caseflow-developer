@@ -1,6 +1,10 @@
 // Add scss includes explicitly here.
 @import 'caseflow_main';
 
+main.usa-grid {
+   max-width: 1200px;
+}
+
 .chip {
     padding: 5px 5px;
     border-radius: 3px;

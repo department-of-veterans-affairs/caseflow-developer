@@ -7,6 +7,7 @@
         %th{"data-field" => "description"} Description
         %th{"data-field" => "labels"} Labels
         %th{"data-field" => "assignees"} Assignees
+        %th{"data-field" => "user"} Created By
     %tbody
       - issues.each do |issue|
         %tr{:style => ('background-color: #fff3e0' if issue.key?(:pull_request))}
@@ -21,3 +22,5 @@
               .chip{:style => "background-color: ##{l[:color]}"}= l[:name]
           %td
             = issue[:assignees].map{ |assignee| assignee[:login] }.join(", ")
+          %td
+            = issue[:user][:login]
