@@ -334,5 +334,8 @@ DEPENDENCIES
   us_web_design_standards!
   web-console
 
+RUBY VERSION
+   ruby 2.2.5p319
+
 BUNDLED WITH
    1.15.1

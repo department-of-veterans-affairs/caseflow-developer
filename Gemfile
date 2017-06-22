@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby '2.2.5'
+
 gem 'rails'
 gem 'pg'
 gem 'redis'
