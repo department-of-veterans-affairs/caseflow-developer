@@ -22,7 +22,7 @@ class CI
 
   def get_master_builds(limit)
     @caseflow.each_build
-        .select { |build| build.branch_info === 'master'}
+        .select { |build| puts 'load build', build.id; build.branch_info === 'master'}
         .first(limit)
   end
 
