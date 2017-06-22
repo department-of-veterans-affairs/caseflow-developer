@@ -1,11 +1,17 @@
+require 'rubygems'
+require 'action_view'
+include ActionView::Helpers::DateHelper
+
 class CI
   def initialize
     @most_recent_build_count = 20
+    @upper_limit_of_builds_to_check_for_failure = 100
     begin
       @caseflow = Travis::Repository.find('department-of-veterans-affairs/caseflow')
       
       # Cache the success rate while we are in the rescue block so all errors are caught.
       success_rate
+      most_recent_failed_build_relative_time
     rescue => e
       puts "Travis health check error", e
       @init_failed = true
@@ -14,11 +20,25 @@ class CI
 
   attr_reader :init_failed, :most_recent_build_count
 
+  def get_master_builds(limit)
+    @caseflow.each_build
+        .select { |build| build.branch_info === 'master'}
+        .first(limit)
+  end
+
+  def most_recent_failed_build_relative_time
+    unless @most_recent_failed_build_relative_time
+      most_recent_failed_build = 
+        get_master_builds(@upper_limit_of_builds_to_check_for_failure).detect {|build| build.unsuccessful?}
+      @most_recent_failed_build_relative_time = 
+        distance_of_time_in_words(Time.now, most_recent_failed_build.finished_at)
+    end
+    @most_recent_failed_build_relative_time
+  end
+
   def success_rate
     unless @success_rate
-      master_builds = @caseflow.each_build
-        .select { |build| build.branch_info === 'master'}
-        .first(@most_recent_build_count)
+      master_builds = get_master_builds(@most_recent_build_count)
       @success_rate ||= master_builds.select {|build| build.passed?}.count / master_builds.size.to_f
     end
 
