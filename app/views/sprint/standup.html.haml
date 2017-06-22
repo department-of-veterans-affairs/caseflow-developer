@@ -11,10 +11,15 @@
         = "#{number_to_percentage(@ci.success_rate * 100, precision: 0)}"
       \.
     %p
-      The most recent failed build was 
-      %strong
-        = @ci.most_recent_failed_build_relative_time
-      ago.
+      - if @ci.most_recent_failed_build_relative_time
+        The most recent failed build was 
+        %strong
+          = @ci.most_recent_failed_build_relative_time
+        ago.
+      - else
+        The most recent 
+        = @ci.upper_limit_of_builds_to_check_for_failure
+        builds all passed.
 %h4 Daily Standup Report
 %blockquote
   %p

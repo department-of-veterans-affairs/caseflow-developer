@@ -18,7 +18,7 @@ class CI
     end
   end
 
-  attr_reader :init_failed, :most_recent_build_count
+  attr_reader :init_failed, :most_recent_build_count, :upper_limit_of_builds_to_check_for_failure
 
   def get_master_builds(limit)
     @caseflow.each_build
@@ -28,10 +28,17 @@ class CI
 
   def most_recent_failed_build_relative_time
     unless @most_recent_failed_build_relative_time
+      # TODO ensure that this lazily stops after the first unsuccessful build is found.
       most_recent_failed_build = 
         get_master_builds(@upper_limit_of_builds_to_check_for_failure).detect {|build| build.unsuccessful?}
-      @most_recent_failed_build_relative_time = 
-        distance_of_time_in_words(Time.now, most_recent_failed_build.finished_at)
+
+      if most_recent_failed_build
+        @most_recent_failed_build_relative_time = 
+          distance_of_time_in_words(Time.now, most_recent_failed_build.finished_at)
+      else
+        @most_recent_failed_build_relative_time = nil
+      end
+
     end
     @most_recent_failed_build_relative_time
   end
