@@ -20,17 +20,34 @@ class CI
 
   attr_reader :init_failed, :most_recent_build_count, :upper_limit_of_builds_to_check_for_failure
 
-  def get_master_builds(limit)
-    @caseflow.each_build
-        .select { |build| puts 'load build', build.id; build.branch_info === 'master'}
-        .first(limit)
+  def master_builds
+    # This code is ugly af but Travis does not give us a nice, efficient way to query the builds.
+    unless @master_builds
+      @master_builds = []
+
+      builds_loaded = 0
+      have_seen_failure = false
+      @caseflow.each_build do |build|
+        builds_loaded += 1
+        next unless build.branch_info == 'master'
+
+        have_seen_failure = have_seen_failure || build.unsuccessful?
+
+        @master_builds.push(build)
+        break if @master_builds.size === @upper_limit_of_builds_to_check_for_failure || 
+          (@master_builds.size > @most_recent_build_count && have_seen_failure)
+      end
+
+      puts "Loaded #{builds_loaded} builds"
+    end
+
+    @master_builds
   end
 
   def most_recent_failed_build_relative_time
     unless @most_recent_failed_build_relative_time
-      # TODO ensure that this lazily stops after the first unsuccessful build is found.
       most_recent_failed_build = 
-        get_master_builds(@upper_limit_of_builds_to_check_for_failure).detect {|build| build.unsuccessful?}
+        master_builds.detect {|build| build.unsuccessful?}
 
       if most_recent_failed_build
         @most_recent_failed_build_relative_time = 
@@ -45,8 +62,8 @@ class CI
 
   def success_rate
     unless @success_rate
-      master_builds = get_master_builds(@most_recent_build_count)
-      @success_rate ||= master_builds.select {|build| build.passed?}.count / master_builds.size.to_f
+      recent_master_builds = master_builds.first(@most_recent_build_count)
+      @success_rate ||= recent_master_builds.select {|build| build.passed?}.count / recent_master_builds.size.to_f
     end
 
     @success_rate
