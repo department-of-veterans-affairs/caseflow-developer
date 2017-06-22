@@ -3,7 +3,9 @@
   - if @ci.init_failed
     Travis health check failed to load.
   - else
-    Travis success rate for recent master builds:
+    Travis success rate for 
+    = @ci.most_recent_build_count
+    recent master builds:
     = "#{number_to_percentage(@ci.success_rate * 100, precision: 0)}"
 %h4 Daily Standup Report
 %blockquote
