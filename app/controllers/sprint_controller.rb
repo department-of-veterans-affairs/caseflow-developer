@@ -16,6 +16,16 @@ class SprintController < ApplicationController
       end
     end
 
+    @count_of_issues_against_wip_limit_by_assignee = @in_progress_by_assignee.map do |assignee, issues|
+      [
+        assignee, 
+        issues.reject do |issue|
+          issue.key?(:pull_request) || 
+            issue[:repository_url] == "https://api.github.com/repos/department-of-veterans-affairs/appeals-design-research"
+        end
+      ]
+    end.to_h
+
     @in_validation_issues = @github.get_issues(params[:team], "open", "In Validation") if params[:team] == 'CASEFLOW'
     @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM' #changes made
 
