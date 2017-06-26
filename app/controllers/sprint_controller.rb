@@ -16,13 +16,26 @@ class SprintController < ApplicationController
       end
     end
 
-    @count_of_issues_against_wip_limit_by_assignee = @in_progress_by_assignee.map do |assignee, issues|
+    @wip_limit = 3
+    @wip_limit_issues_by_assignee = @in_progress_by_assignee.map do |assignee, issues|
+      issue_count = issues.reject do |issue|
+        issue.key?(:pull_request) || 
+          issue[:repository_url] == "https://api.github.com/repos/department-of-veterans-affairs/appeals-design-research"
+      end.size
+      if issue_count <= @wip_limit
+        norm = 'norm-good'
+      elsif issue_count <= @wip_limit * 2
+        norm = 'norm-mediocre'
+      else
+        norm = 'norm-bad'
+      end
+
       [
         assignee, 
-        issues.reject do |issue|
-          issue.key?(:pull_request) || 
-            issue[:repository_url] == "https://api.github.com/repos/department-of-veterans-affairs/appeals-design-research"
-        end
+        {
+          :issue_count => issue_count,
+          :norm => norm
+        }
       ]
     end.to_h
 

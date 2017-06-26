@@ -155,18 +155,20 @@ main.usa-grid {
     margin-right: 1em;
 }
 
-.cf-ci-success-report {
-  &.safe {
+.cf-norm {
+  &.norm-good {
     color: $color-green;
   }
 
-  &.flakey {
+  &.norm-mediocre {
     color: #F0835e;
   }
 
-  &.dangerous {
+  &.norm-dangerous {
     color: #e31c3d;
   }
+}
 
+.cf-ci-success-report {
   margin-bottom: 3rem;
 }
