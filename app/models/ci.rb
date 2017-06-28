@@ -73,11 +73,11 @@ class CI
     if @init_failed
       'init-failed'
     elsif success_rate >= 0.95
-      'safe'
+      'norm-good'
     elsif success_rate >= 0.7
-      'flakey'
+      'norm-mediocre'
     else
-      'dangerous'
+      'norm-bad'
     end
   end
 end

@@ -1,5 +1,5 @@
 %h4 Continuous Integration Health
-.cf-ci-success-report{:class => @ci.success_category}
+.cf-ci-success-report.cf-norm{:class => @ci.success_category}
   - if @ci.init_failed
     Travis health check failed to load.
   - else
@@ -42,11 +42,14 @@
 .row
   - Hash[ @in_progress_by_assignee.sort_by { |key, val| key.to_s } ].each do |github_name, issues|
     .row
-      %div
-        %img{:alt => "", :src => issues.first[:assignee][:avatar_url], :style => "border-radius: 50%; height: 100px;width: 100px;overflow: hidden;"}/
-        %h2{:style => "display: inline-block; padding-left: 15px;"}
-          = github_name
-          (#{issues.first[:assignee][:login]})
+      %img{:alt => "", :src => issues.first[:assignee][:avatar_url], :style => "border-radius: 50%; height: 100px;width: 100px;overflow: hidden;"}/
+      %h2{:style => "display: inline-block; padding-left: 15px;"}
+        = github_name
+        (#{issues.first[:assignee][:login]})
+      - if @wip_limit_issues_by_assignee[github_name][:issue_count] > 0
+        %span.cf-norm{:class => @wip_limit_issues_by_assignee[github_name][:norm]} 
+          = @wip_limit_issues_by_assignee[github_name][:issue_count]
+          current in-progress tasks.
     = render "issues_table", issues: issues
     %br/
   - unless @in_progress_by_assignee_optional.count == 0
