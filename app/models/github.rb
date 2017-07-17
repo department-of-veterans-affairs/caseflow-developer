@@ -14,7 +14,6 @@ class Github
 
   attr_accessor :team_members, :team_repos
 
-
   def get_issues(team_name, state, *labels)
     get_team_info(team_name)
 
@@ -32,36 +31,41 @@ class Github
                 }
                 
                 title
+                repository {
+                  name
+                }
               }
             }
           }
         }
       QUERY
 
-      Rails.logger.info Graphql.query(query, {
+      query_results = Graphql.query(query, {
         repo_owner: repo[:owner][:login],
         repo_name: repo[:name],
         state: state,
         labels: labels
       })
 
-      Octokit.list_issues(repo[:full_name], state: state.downcase, labels: labels.join(','))
+      query_results['repository']['issues']['nodes']
     end.flatten
+  end
+
+  def is_issue_unassigned(issue)
+    issue['assignees']['nodes'].empty?
   end
 
   def issues_by_assignee(team_name, *labels)
     issues = get_issues(team_name, 'OPEN', *labels)
+    Rails.logger.info issues
     filtered_issues = issues.reject do |issue| 
-      issue[:html_url].split("/")[4] == "appeals-support" || (issue[:assignee].nil? && issue[:title] =~ /wip/i)
-    end
-    grouped_issues = filtered_issues.group_by do |issue|
-      issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
-      issue[:assignee][:login]
+      issue['repository']['name'] == "appeals-support" || (is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
     end
 
-    # Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
-    grouped_issues.transform_keys do |key|
-      Octokit.user(key)[:name]
+    # TODO: this will make issues only show up under the first person to whom the issue is assigned.
+    # We would like the issue to show up under each person to whom it is assigned.
+    filtered_issues.group_by do |issue|
+      if is_issue_unassigned(issue) then 'unassigned' else issue['assignees']['nodes'].first['login'] end
     end
   end
 
@@ -138,4 +142,3 @@ class Github
     end.flatten
   end
 end
-

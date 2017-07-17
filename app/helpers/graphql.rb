@@ -14,7 +14,7 @@ module Graphql
         query: query_str,
         variables: variables
       }.to_json
-    ).parsed_response
+    ).parsed_response['data']
   end
 end
 

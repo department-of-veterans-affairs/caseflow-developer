@@ -9,7 +9,7 @@ class SprintController < ApplicationController
     @in_progress_by_assignee_optional = []
     required_logins = @github.team_members.map {|i| i[:login] }
     @in_progress_by_assignee.each do |assignee, issues|
-      next if issues.first[:assignee][:login] == "Unassigned"
+      next if assignee == 'unassigned'
       unless required_logins.include?(issues.first[:assignee][:login])
         @in_progress_by_assignee_optional << [assignee, issues]
         @in_progress_by_assignee.delete(assignee)
