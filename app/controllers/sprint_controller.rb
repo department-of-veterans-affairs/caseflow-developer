@@ -39,7 +39,7 @@ class SprintController < ApplicationController
       ]
     end.to_h
 
-    @in_validation_issues = @github.get_issues(params[:team], "open", "In Validation") if params[:team] == 'CASEFLOW'
+    @in_validation_issues = @github.get_issues(params[:team], "OPEN", "In Validation") if params[:team] == 'CASEFLOW'
     @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM' #changes made
 
   end
@@ -53,7 +53,7 @@ class SprintController < ApplicationController
 
   def issues_report
     @github = Github.new
-    @issues_by_project = @github.get_issues('CASEFLOW', "closed").group_by {|issue|  issue[:html_url].split("/")[4]}
+    @issues_by_project = @github.get_issues('CASEFLOW', "CLOSED").group_by {|issue|  issue[:html_url].split("/")[4]}
   end
 
   def weekly_report

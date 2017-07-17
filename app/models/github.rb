@@ -20,9 +20,9 @@ class Github
 
     @team_repos.map do |repo|
       query = <<-QUERY
-        query($repo_owner: String!, $repo_name: String!) { 
+        query($repo_owner: String!, $repo_name: String!, $state: IssueState!, $labels: [String!]!) { 
           repository(owner: $repo_owner, name: $repo_name) {
-            issues(states: OPEN, first: 10, labels: ["In Progress"]) {
+            issues(states: [$state], first: 100, labels: $labels) {
               nodes {
                 assignees(first: 100) {
                   nodes {
@@ -40,15 +40,17 @@ class Github
 
       Rails.logger.info Graphql.query(query, {
         repo_owner: repo[:owner][:login],
-        repo_name: repo[:name]
+        repo_name: repo[:name],
+        state: state,
+        labels: labels
       })
 
-      Octokit.list_issues(repo[:full_name], state: state, labels: labels.join(','))
+      Octokit.list_issues(repo[:full_name], state: state.downcase, labels: labels.join(','))
     end.flatten
   end
 
   def issues_by_assignee(team_name, *labels)
-    issues = get_issues(team_name,'open', labels)
+    issues = get_issues(team_name, 'OPEN', *labels)
     filtered_issues = issues.reject do |issue| 
       issue[:html_url].split("/")[4] == "appeals-support" || (issue[:assignee].nil? && issue[:title] =~ /wip/i)
     end
