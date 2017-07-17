@@ -19,6 +19,11 @@ class Github
     get_team_info(team_name)
 
     @team_repos.map do |repo|
+      puts Graphql.query(<<-QUERY
+        query { viewer { login }}
+      QUERY
+      )
+
       Octokit.list_issues(repo[:full_name], state: state, labels: labels.join(','))
     end.flatten
   end
