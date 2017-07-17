@@ -19,10 +19,29 @@ class Github
     get_team_info(team_name)
 
     @team_repos.map do |repo|
-      puts Graphql.query(<<-QUERY
-        query { viewer { login }}
+      query = <<-QUERY
+        query($repo_owner: String!, $repo_name: String!) { 
+          repository(owner: $repo_owner, name: $repo_name) {
+            issues(states: OPEN, first: 10, labels: ["In Progress"]) {
+              nodes {
+                assignees(first: 100) {
+                  nodes {
+                    login
+                    name
+                  }
+                }
+                
+                title
+              }
+            }
+          }
+        }
       QUERY
-      )
+
+      Rails.logger.info Graphql.query(query, {
+        repo_owner: repo[:owner][:login],
+        repo_name: repo[:name]
+      })
 
       Octokit.list_issues(repo[:full_name], state: state, labels: labels.join(','))
     end.flatten
