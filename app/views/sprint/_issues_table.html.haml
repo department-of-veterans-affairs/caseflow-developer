@@ -12,15 +12,15 @@
       - issues.each do |issue|
         %tr{:style => ('background-color: #fff3e0' if issue.key?(:pull_request))}
           %td
-            %a{:href => issue[:html_url]}
+            %a{:href => issue['url']}
               = "PR" if issue.key? :pull_request
               \##{issue[:number]}
-          %td= issue[:html_url].split("/")[4]
-          %td= issue[:title]
+          %td= issue['repository']['name']
+          %td= issue['title']
           %td
-            - issue[:labels].each do |l|
-              .chip{:style => "background-color: ##{l[:color]}"}= l[:name]
+            - issue['labels']['nodes'].each do |label|
+              .chip{:style => "background-color: ##{label['color']}"}= label['name']
           %td
-            = issue[:assignees].map{ |assignee| assignee[:login] }.join(", ")
+            = issue['assignees']['nodes'].map{ |assignee| assignee['login'] }.join(", ")
           %td
-            = issue[:user][:login]
+            = issue['author']['login']

@@ -10,7 +10,7 @@ class SprintController < ApplicationController
     required_logins = @github.team_members.map {|i| i[:login] }
     @in_progress_by_assignee.each do |assignee, issues|
       next if assignee == 'unassigned'
-      unless required_logins.include?(issues.first[:assignee][:login])
+      unless required_logins.include?(assignee)
         @in_progress_by_assignee_optional << [assignee, issues]
         @in_progress_by_assignee.delete(assignee)
       end
@@ -19,8 +19,7 @@ class SprintController < ApplicationController
     @wip_limit = 3
     @wip_limit_issues_by_assignee = @in_progress_by_assignee.map do |assignee, issues|
       issue_count = issues.reject do |issue|
-        issue.key?(:pull_request) || 
-          issue[:repository_url] == "https://api.github.com/repos/department-of-veterans-affairs/appeals-design-research"
+        issue['repository']['name'] == "appeals-design-research"
       end.size
       if issue_count <= @wip_limit
         norm = 'norm-good'
