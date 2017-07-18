@@ -15,7 +15,7 @@
             %a{:href => issue['url']}
               = "PR" if issue.key? :pull_request
               \##{issue['number']}
-          %td= issue['repository']['name']
+          %td= issue['repositoryName']
           %td= issue['title']
           %td
             - issue['labels']['nodes'].each do |label|

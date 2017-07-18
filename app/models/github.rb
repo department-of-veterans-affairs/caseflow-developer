@@ -34,9 +34,6 @@ class Github
                 url
                 title
                 number
-                repository {
-                  name
-                }
                 author {
                   login
                 }
@@ -59,7 +56,9 @@ class Github
         labels: labels
       })
 
-      query_results['repository']['issues']['nodes']
+      query_results['repository']['issues']['nodes'].each do |issue|
+        issue['repositoryName'] = repo[:name]
+      end
     end.flatten
   end
 
@@ -71,7 +70,7 @@ class Github
     issues = get_issues(team_name, 'OPEN', *labels)
     Rails.logger.info issues
     filtered_issues = issues.reject do |issue| 
-      issue['repository']['name'] == "appeals-support" || (is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
+      issue['repositoryName'] == "appeals-support" || (is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
     end
 
     # TODO: this will make issues only show up under the first person to whom the issue is assigned.
