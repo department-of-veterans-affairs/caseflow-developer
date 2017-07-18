@@ -71,13 +71,6 @@ class SprintController < ApplicationController
 
   end
 
-  #BVA Technology
-  def bva_standup
-     @github = Github.new 
-     @bva_standup_report = @github.get_bva_issues
-  end
-
-
   def issues_report
     @github = Github.new
     @issues_by_project = @github.get_issues('CASEFLOW', "CLOSED").group_by {|issue|  issue[:html_url].split("/")[4]}
