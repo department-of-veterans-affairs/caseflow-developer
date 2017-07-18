@@ -21,15 +21,8 @@ class Github
     end
   end
 
-  # I think it's confusing to refer to both PRs and issues as "issues". 
-  # Changing most instances of "issues" to be "work_items" is too much
-  # churn for this PR.
-  def get_work_items(team_name, state, *labels)
-    get_team_info(team_name)
-
-    # TODO This does not include PRs.
-    @team_repos.map do |repo|
-      query = <<-QUERY
+  def get_issues_for_repo(repo, state, *labels)
+    query = <<-QUERY
         fragment assignableFields on Assignable {
           assignees(first: 100) {
             nodes {
@@ -94,6 +87,17 @@ class Github
 
       add_repo_name_and_type(query_results['repository']['issues']['nodes'], :issue, repo)
         .concat(add_repo_name_and_type(query_results['repository']['pullRequests']['nodes'], :pull_request, repo))
+  end
+
+  # I think it's confusing to refer to both PRs and issues as "issues". 
+  # Changing most instances of "issues" to be "work_items" is too much
+  # churn for this PR.
+  def get_work_items(team_name, state, *labels)
+    get_team_info(team_name)
+
+    # TODO This does not include PRs.
+    @team_repos.map do |repo|
+      get_issues_for_repo(repo, state, *labels)
     end.flatten
   end
 
@@ -116,7 +120,15 @@ class Github
   end
 
   def get_product_support_issues
-    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
+    get_issues_for_repo({
+        :owner => {
+          :login => 'department-of-veterans-affairs'
+        },
+        :name => 'appeals-support'
+      }, 
+      "OPEN", 
+      "In Progress"
+    )
   end
 
    #Use hash to Keep issues created in past 7 days
