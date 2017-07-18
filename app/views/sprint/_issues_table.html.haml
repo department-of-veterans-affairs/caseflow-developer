@@ -9,11 +9,11 @@
         %th{"data-field" => "assignees"} Assignees
         %th{"data-field" => "user"} Created By
     %tbody
-      - issues.each do |issue|
-        %tr{:style => ('background-color: #fff3e0' if issue.key?(:pull_request))}
+      - issues.sort_by {|work_item| if work_item['type'] == :pull_request then 0 else 1 end}.each do |issue|
+        %tr{:style => ('background-color: #fff3e0' if issue['type'] == :pull_request)}
           %td
             %a{:href => issue['url']}
-              = "PR" if issue.key? :pull_request
+              = "PR" if issue['type'] == :pull_request
               \##{issue['number']}
           %td= issue['repositoryName']
           %td= issue['title']

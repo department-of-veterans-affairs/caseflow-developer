@@ -47,7 +47,7 @@ class SprintController < ApplicationController
     @wip_limit = 3
     @wip_limit_issues_by_assignee = @in_progress_by_assignee.map do |assignee, issues|
       issue_count = issues.reject do |issue|
-        issue['repositoryName'] == "appeals-design-research"
+        issue['repositoryName'] == "appeals-design-research" || issue['type'] == :pull_request
       end.size
       if issue_count <= @wip_limit
         norm = 'norm-good'
