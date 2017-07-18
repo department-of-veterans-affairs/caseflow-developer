@@ -77,7 +77,7 @@ class CI
     elsif success_rate >= 0.7
       'norm-mediocre'
     else
-      'norm-bad'
+      'norm-dangerous'
     end
   end
 end

@@ -8,6 +8,7 @@
         %th{"data-field" => "labels"} Labels
         %th{"data-field" => "assignees"} Assignees
         %th{"data-field" => "user"} Created By
+        %th{"data-field" => "age"} Business Time in Current State
     %tbody
       - issues.sort_by {|work_item| if work_item['type'] == :pull_request then 0 else 1 end}.each do |issue|
         %tr{:style => ('background-color: #fff3e0' if issue['type'] == :pull_request)}
@@ -24,3 +25,7 @@
             = issue['assignees']['nodes'].map{ |assignee| assignee['login'] }.join(", ")
           %td
             = issue['author']['login']
+          %td
+            - if issue['timing']
+              .cf-norm{:class => issue['timing']['norm']}
+                = issue['timing']['durationMessage']

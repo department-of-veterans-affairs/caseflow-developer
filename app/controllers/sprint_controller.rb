@@ -54,9 +54,10 @@ class SprintController < ApplicationController
       ]
     end.to_h
 
+    # TODO We shouldn't be doing two requests to each repo to get both 'In Progress' and in 'In Validation' tickets.
+    # We should just make a single request and then do the sorting on this end. That should be much faster.
     @in_validation_issues = @github.get_issues(params[:team], "OPEN", "In Validation") if params[:team] == 'CASEFLOW'
-    @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM' #changes made
-
+    @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM'
   end
 
   #BVA Technology

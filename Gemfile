@@ -57,5 +57,5 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem "travis", "~> 1.8"
-
 gem "httparty", "~> 0.15.5"
+gem "business_time", "~> 0.9.2"

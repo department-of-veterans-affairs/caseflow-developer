@@ -55,16 +55,33 @@ class Github
                 number
                 title
                 url
+                createdAt
               }
             }
             issues(first: 100, states: [$state], labels: $labels) {
-              nodes {
-                ...assignableFields
-                ...commentFields
-                ...labelFields
-                number
-                title
-                url
+              edges {
+                node {
+                  ...assignableFields
+                  ...commentFields
+                  ...labelFields
+                  number
+                  title
+                  url
+                  timeline(last: 100) {
+                    nodes { 
+                      __typename
+                      ... on LabeledEvent {
+                        createdAt
+                        label {
+                          name
+                        }
+                        actor {
+                          login
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -78,15 +95,65 @@ class Github
         labels: labels
       })
 
-      def add_repo_name_and_type(items, type, repo)
+      def annotate_work_items!(items, type, repo)
         items.each do |item|
           item['repositoryName'] = repo[:name]
           item['type'] = type
+
+          entered_current_state_time = nil
+
+          if repo[:name] != 'appeals-design-research'
+            if type == :issue
+              # If an issue has been in and out of "In Progress" or "In Validation" multiple times,
+              # we'll just take the most recent time.
+              entered_current_state_time = item['timeline']['nodes'].find_all do |event|
+                event['__typename'] == 'LabeledEvent' && 
+                  ['In Validation', 'In Progress'].include?(event['label']['name'])
+              end.map do |event|
+                event['createdAt']
+              end.max
+            elsif type == :pull_request
+              entered_current_state_time = item['createdAt']
+            end
+
+            if entered_current_state_time
+              # I would like to make this more precise, but see: https://github.com/bokmann/business_time/issues/171
+              days_in_current_state = DateTime.parse(entered_current_state_time).business_days_until(DateTime.now).to_i
+
+              if days_in_current_state <= 3
+                norm = 'norm-good'
+              elsif days_in_current_state <= 5
+                norm = 'norm-mediocre'
+              else
+                norm = 'norm-dangerous'
+              end
+
+              item['timing'] = {
+                'enteredCurrentStateTime' => entered_current_state_time,
+                'durationMessage' => time_ago_in_words(DateTime.now - days_in_current_state),
+                'norm' => norm
+              }
+            end
+          end
         end
       end
 
-      add_repo_name_and_type(query_results['repository']['issues']['nodes'], :issue, repo)
-        .concat(add_repo_name_and_type(query_results['repository']['pullRequests']['nodes'], :pull_request, repo))
+      # We're wrapping the issues query in edges instead of accessing nodes directly because it's
+      # a workaround for a GH bug: https://twitter.com/nickheiner/status/887392169144852481.
+      issues = query_results['repository']['issues']['edges'].map do |edge|
+        edge['node']
+      end
+
+      annotate_work_items!(issues, :issue, repo)
+        .concat(annotate_work_items!(query_results['repository']['pullRequests']['nodes'], :pull_request, repo))
+        .sort_by do |work_item|
+          if work_item['timing']
+            work_item['timing']['enteredCurrentStateTime']
+          else 
+            # If an item does not have a timing, we'll put it at the end.
+            '2100'
+          end
+        end
   end
 
   # I think it's confusing to refer to both PRs and issues as "issues". 
