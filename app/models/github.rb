@@ -100,36 +100,37 @@ class Github
           item['repositoryName'] = repo[:name]
           item['type'] = type
 
-          # TODO maybe clean this up once all the cases are implemented
           entered_current_state_time = nil
 
-          if type == :issue
-            entered_current_state_time = item['timeline']['nodes'].find_all do |event|
-              event['__typename'] == 'LabeledEvent' && 
-                ['In Validation', 'In Progress'].include?(event['label']['name'])
-            end.map do |event|
-              event['createdAt']
-            end.max
-          elsif type == :pull_request
-            entered_current_state_time = item['createdAt']
-          end
-
-          if entered_current_state_time
-            days_in_current_state = DateTime.parse(entered_current_state_time).business_days_until(DateTime.now).to_i
-
-            if days_in_current_state <= 3
-              norm = 'norm-good'
-            elsif days_in_current_state <= 5
-              norm = 'norm-mediocre'
-            else
-              norm = 'norm-dangerous'
+          if repo[:name] != 'appeals-design-research'
+            if type == :issue
+              entered_current_state_time = item['timeline']['nodes'].find_all do |event|
+                event['__typename'] == 'LabeledEvent' && 
+                  ['In Validation', 'In Progress'].include?(event['label']['name'])
+              end.map do |event|
+                event['createdAt']
+              end.max
+            elsif type == :pull_request
+              entered_current_state_time = item['createdAt']
             end
 
-            item['timing'] = {
-              'enteredCurrentStateTime' => entered_current_state_time,
-              'durationMessage' => time_ago_in_words(DateTime.now - days_in_current_state),
-              'norm' => norm
-            }
+            if entered_current_state_time
+              days_in_current_state = DateTime.parse(entered_current_state_time).business_days_until(DateTime.now).to_i
+
+              if days_in_current_state <= 3
+                norm = 'norm-good'
+              elsif days_in_current_state <= 5
+                norm = 'norm-mediocre'
+              else
+                norm = 'norm-dangerous'
+              end
+
+              item['timing'] = {
+                'enteredCurrentStateTime' => entered_current_state_time,
+                'durationMessage' => time_ago_in_words(DateTime.now - days_in_current_state),
+                'norm' => norm
+              }
+            end
           end
         end
       end
