@@ -104,7 +104,8 @@ class Github
   def issues_by_assignee(team_name, *labels)
     issues = get_work_items(team_name, 'OPEN', *labels)
     filtered_issues = issues.reject do |issue| 
-      issue['repositoryName'] == "appeals-support" || (issue['type'] == :pull_request && issue['title'] =~ /wip/i)
+      issue['repositoryName'] == "appeals-support" || 
+        (issue['type'] == :pull_request && is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
     end
 
     # TODO: this will make issues only show up under the first person to whom the issue is assigned.
