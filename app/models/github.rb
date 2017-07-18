@@ -14,49 +14,121 @@ class Github
 
   attr_accessor :team_members, :team_repos
 
+  def get_issues(*args)
+    work_items = get_work_items(*args)
+    work_items.find_all do |work_item|
+      work_item['type'] == :issue
+    end
+  end
 
-  def get_issues(team_name, state, *labels)
+  def get_issues_for_repo(repo, state, *labels)
+    query = <<-QUERY
+        fragment assignableFields on Assignable {
+          assignees(first: 100) {
+            nodes {
+              login
+              name
+              avatarUrl
+            }
+          }
+        }
+        fragment commentFields on Comment {
+          author {
+            login
+          }
+        }
+        fragment labelFields on Labelable {
+          labels(first: 100) {
+            nodes {
+              color
+              name
+            }
+          }  
+        }
+        query($repo_owner: String!, $repo_name: String!, $state: IssueState!, $labels: [String!]!) { 
+          repository(owner: $repo_owner, name: $repo_name) {
+            pullRequests(first: 100, states: OPEN, labels: $labels) {
+              nodes {
+                ...assignableFields
+                ...commentFields
+                ...labelFields
+                number
+                title
+                url
+              }
+            }
+            issues(first: 100, states: [$state], labels: $labels) {
+              nodes {
+                ...assignableFields
+                ...commentFields
+                ...labelFields
+                number
+                title
+                url
+              }
+            }
+          }
+        }
+      QUERY
+
+      query_results = Graphql.query(query, {
+        repo_owner: repo[:owner][:login],
+        repo_name: repo[:name],
+        state: state,
+        labels: labels
+      })
+
+      def add_repo_name_and_type(items, type, repo)
+        items.each do |item|
+          item['repositoryName'] = repo[:name]
+          item['type'] = type
+        end
+      end
+
+      add_repo_name_and_type(query_results['repository']['issues']['nodes'], :issue, repo)
+        .concat(add_repo_name_and_type(query_results['repository']['pullRequests']['nodes'], :pull_request, repo))
+  end
+
+  # I think it's confusing to refer to both PRs and issues as "issues". 
+  # Changing most instances of "issues" to be "work_items" is too much
+  # churn for this PR.
+  def get_work_items(team_name, state, *labels)
     get_team_info(team_name)
 
+    # TODO This does not include PRs.
     @team_repos.map do |repo|
-      Octokit.list_issues(repo[:full_name], state: state, labels: labels.join(','))
+      get_issues_for_repo(repo, state, *labels)
     end.flatten
   end
 
-  def issues_by_assignee(team_name, *labels)
-    issues = get_issues(team_name,'open', labels)
-    filtered_issues = issues.reject do |issue| 
-      issue[:html_url].split("/")[4] == "appeals-support" || (issue[:assignee].nil? && issue[:title] =~ /wip/i)
-    end
-    grouped_issues = filtered_issues.group_by do |issue|
-      issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
-      issue[:assignee][:login]
-    end
-
-    # Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
-    grouped_issues.transform_keys do |key|
-      Octokit.user(key)[:name]
-    end
+  def is_issue_unassigned(issue)
+    issue['assignees']['nodes'].empty?
   end
 
-
-  #BVA Technologies
-  def get_bva_issues()
-    issues = Octokit.list_issues("department-of-veterans-affairs/bva-technology", direction: 'desc')
-    filtered_issues = issues.select { |i| i[:state] =='open'}
-    grouped_issues = filtered_issues.group_by do |issue|
-      issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
-      issue[:assignee][:login]
+  def issues_by_assignee(team_name, *labels)
+    issues = get_work_items(team_name, 'OPEN', *labels)
+    filtered_issues = issues.reject do |issue| 
+      issue['repositoryName'] == "appeals-support" || 
+        (issue['type'] == :pull_request && is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
     end
 
-    #Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
-    grouped_issues.transform_keys do |key|
-      Octokit.user(key)[:name] || key
-    end 
+    # TODO: this will make issues only show up under the first person to whom the issue is assigned.
+    # We would like the issue to show up under each person to whom it is assigned.
+    filtered_issues.group_by do |issue|
+      if is_issue_unassigned(issue) then 'unassigned' else issue['assignees']['nodes'].first['login'] end
+    end
   end
 
   def get_product_support_issues
-    Octokit.list_issues("department-of-veterans-affairs/appeals-support", state: "open", labels: "In Progress")
+    get_issues_for_repo({
+        :owner => {
+          :login => 'department-of-veterans-affairs'
+        },
+        :name => 'appeals-support'
+      }, 
+      "OPEN", 
+      "In Progress"
+    )
   end
 
    #Use hash to Keep issues created in past 7 days
@@ -112,4 +184,3 @@ class Github
     end.flatten
   end
 end
-

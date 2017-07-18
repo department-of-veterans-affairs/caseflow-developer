@@ -4,23 +4,50 @@ class SprintController < ApplicationController
   def standup
     @ci = CI.new
     @github = Github.new
-    @in_progress_by_assignee = @github.issues_by_assignee(params[:team], "In Progress")
 
-    @in_progress_by_assignee_optional = []
+    def sort_issues(issues, assignees) 
+      issues.sort_by do |login, issues| 
+        # 'A' is a hack to move 'unassigned' to the front of the list.
+        # There is a larger cleanup to do, but I don't want to make too many
+        # changes right now. Also, I am not sure that Ruby hashes have
+        # an iterating order as part of their contract, but in practice
+        # it seems to work! :)
+        if login == 'unassigned' then 'A' else assignees[login]['name'] end
+      end.to_h
+    end
+
+    in_progress_by_assignee_unsorted = @github.issues_by_assignee(params[:team], "In Progress")
+    @assignees = in_progress_by_assignee_unsorted.map do |login, issues|
+      issues.map do |issue|
+        issue['assignees']['nodes']
+      end
+    end.flatten.uniq do |assignee|
+      assignee['login']
+    end.map do |assignee|
+      [assignee['login'], assignee]
+    end.push(['unassigned', {
+      'login' => 'unassigned',
+      'name' => 'Unassigned'
+    }]).to_h
+
+    @in_progress_by_assignee = sort_issues(in_progress_by_assignee_unsorted, @assignees)
+
+    in_progress_by_assignee_optional_unsorted = []
     required_logins = @github.team_members.map {|i| i[:login] }
     @in_progress_by_assignee.each do |assignee, issues|
-      next if issues.first[:assignee][:login] == "Unassigned"
-      unless required_logins.include?(issues.first[:assignee][:login])
-        @in_progress_by_assignee_optional << [assignee, issues]
+      next if assignee == 'unassigned'
+      unless required_logins.include?(assignee)
+        in_progress_by_assignee_optional_unsorted << [assignee, issues]
         @in_progress_by_assignee.delete(assignee)
       end
     end
 
+    @in_progress_by_assignee_optional = sort_issues(in_progress_by_assignee_optional_unsorted, @assignees)
+
     @wip_limit = 3
     @wip_limit_issues_by_assignee = @in_progress_by_assignee.map do |assignee, issues|
       issue_count = issues.reject do |issue|
-        issue.key?(:pull_request) || 
-          issue[:repository_url] == "https://api.github.com/repos/department-of-veterans-affairs/appeals-design-research"
+        issue['repositoryName'] == "appeals-design-research" || issue['type'] == :pull_request
       end.size
       if issue_count <= @wip_limit
         norm = 'norm-good'
@@ -39,21 +66,14 @@ class SprintController < ApplicationController
       ]
     end.to_h
 
-    @in_validation_issues = @github.get_issues(params[:team], "open", "In Validation") if params[:team] == 'CASEFLOW'
+    @in_validation_issues = @github.get_issues(params[:team], "OPEN", "In Validation") if params[:team] == 'CASEFLOW'
     @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM' #changes made
 
   end
 
-  #BVA Technology
-  def bva_standup
-     @github = Github.new 
-     @bva_standup_report = @github.get_bva_issues
-  end
-
-
   def issues_report
     @github = Github.new
-    @issues_by_project = @github.get_issues('CASEFLOW', "closed").group_by {|issue|  issue[:html_url].split("/")[4]}
+    @issues_by_project = @github.get_issues('CASEFLOW', "CLOSED").group_by {|issue|  issue[:html_url].split("/")[4]}
   end
 
   def weekly_report
