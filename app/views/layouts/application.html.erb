@@ -26,6 +26,7 @@
                 <li><%= link_to "All Repos", sprint_standup_path %></li>
                 <li><%= link_to "Appeals PM", sprint_standup_path(team: 'APPEALS_PM') %></li>
                 <li><%= link_to "Caseflow", sprint_standup_path(team: 'CASEFLOW') %></li>
+                <li><%= link_to "BVA Technology", sprint_bva_standup_path(team: 'APPEALS_PM')%></li>
                 <li><a href ="<%= url_for controller: 'reports', action: 'weekly_report'%>"> Excel Reports</a></li>
               </ul>
               <%= link_to('Sign out', destroy_user_session_path, :method => :delete, style: "padding-left: 15px;") %>
