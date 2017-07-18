@@ -112,11 +112,32 @@ class Github
         (issue['type'] == :pull_request && is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
     end
 
+    assignees = filtered_issues.map do |issue|
+      issue['assignees']['nodes']
+    end.flatten.uniq do |assignee|
+      assignee['login']
+    end.map do |assignee|
+      [assignee['login'], assignee]
+    end.push(['unassigned', {
+      'login' => 'unassigned',
+      'name' => 'Unassigned'
+    }]).to_h
+
     # TODO: this will make issues only show up under the first person to whom the issue is assigned.
     # We would like the issue to show up under each person to whom it is assigned.
-    filtered_issues.group_by do |issue|
-      if is_issue_unassigned(issue) then 'unassigned' else issue['assignees']['nodes'].first['login'] end
+    issues_by_assignee = assignees.transform_values do |assignee|
+      filtered_issues.find_all do |issue|
+        if assignee['login'] == 'unassigned'
+          next is_issue_unassigned(issue)
+        end
+
+        issue['assignees']['nodes'].any? do |assignee_node|
+          assignee['login'] == assignee_node['login']
+        end
+      end
     end
+
+    [issues_by_assignee, assignees]
   end
 
   def get_product_support_issues

@@ -7,28 +7,16 @@ class SprintController < ApplicationController
 
     def sort_issues(issues, assignees) 
       issues.sort_by do |login, issues| 
-        # 'A' is a hack to move 'unassigned' to the front of the list.
+        # '!' is a hack to move 'unassigned' to the front of the list.
         # There is a larger cleanup to do, but I don't want to make too many
         # changes right now. Also, I am not sure that Ruby hashes have
         # an iterating order as part of their contract, but in practice
         # it seems to work! :)
-        if login == 'unassigned' then 'A' else assignees[login]['name'] end
+        if login == 'unassigned' then '!' else assignees[login]['name'] end
       end.to_h
     end
 
-    in_progress_by_assignee_unsorted = @github.issues_by_assignee(params[:team], "In Progress")
-    @assignees = in_progress_by_assignee_unsorted.map do |login, issues|
-      issues.map do |issue|
-        issue['assignees']['nodes']
-      end
-    end.flatten.uniq do |assignee|
-      assignee['login']
-    end.map do |assignee|
-      [assignee['login'], assignee]
-    end.push(['unassigned', {
-      'login' => 'unassigned',
-      'name' => 'Unassigned'
-    }]).to_h
+    in_progress_by_assignee_unsorted, @assignees = @github.issues_by_assignee(params[:team], "In Progress")
 
     @in_progress_by_assignee = sort_issues(in_progress_by_assignee_unsorted, @assignees)
 
