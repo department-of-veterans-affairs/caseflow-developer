@@ -14,7 +14,17 @@ class Github
 
   attr_accessor :team_members, :team_repos
 
-  def get_issues(team_name, state, *labels)
+  def get_issues(*args)
+    work_items = get_work_items(*args)
+    work_items.find_all do |work_item|
+      work_item['type'] == :issue
+    end
+  end
+
+  # I think it's confusing to refer to both PRs and issues as "issues". 
+  # Changing most instances of "issues" to be "work_items" is too much
+  # churn for this PR.
+  def get_work_items(team_name, state, *labels)
     get_team_info(team_name)
 
     # TODO This does not include PRs.
@@ -44,7 +54,7 @@ class Github
         }
         query($repo_owner: String!, $repo_name: String!, $state: IssueState!, $labels: [String!]!) { 
           repository(owner: $repo_owner, name: $repo_name) {
-            pullRequests(first: 100, states: OPEN) {
+            pullRequests(first: 100, states: OPEN, labels: $labels) {
               nodes {
                 ...assignableFields
                 ...commentFields
@@ -75,9 +85,15 @@ class Github
         labels: labels
       })
 
-      query_results['repository']['issues']['nodes'].each do |issue|
-        issue['repositoryName'] = repo[:name]
+      def add_repo_name_and_type(items, type, repo)
+        items.each do |item|
+          item['repositoryName'] = repo[:name]
+          item['type'] = type
+        end
       end
+
+      add_repo_name_and_type(query_results['repository']['issues']['nodes'], :issue, repo)
+        .concat(add_repo_name_and_type(query_results['repository']['pullRequests']['nodes'], :pull_request, repo))
     end.flatten
   end
 
@@ -86,10 +102,9 @@ class Github
   end
 
   def issues_by_assignee(team_name, *labels)
-    issues = get_issues(team_name, 'OPEN', *labels)
-    Rails.logger.info issues
+    issues = get_work_items(team_name, 'OPEN', *labels)
     filtered_issues = issues.reject do |issue| 
-      issue['repositoryName'] == "appeals-support" || (is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
+      issue['repositoryName'] == "appeals-support" || (issue['type'] == :pull_request && issue['title'] =~ /wip/i)
     end
 
     # TODO: this will make issues only show up under the first person to whom the issue is assigned.
