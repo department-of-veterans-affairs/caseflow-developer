@@ -64,7 +64,7 @@ class Github
                 url
               }
             }
-            issues(states: [$state], first: 100, labels: $labels) {
+            issues(first: 100, states: [$state], labels: $labels) {
               nodes {
                 ...assignableFields
                 ...commentFields
