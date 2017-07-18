@@ -7,6 +7,11 @@ class SprintController < ApplicationController
 
     def sort_issues(issues, assignees) 
       issues.sort_by do |login, issues| 
+        # 'A' is a hack to move 'unassigned' to the front of the list.
+        # There is a larger cleanup to do, but I don't want to make too many
+        # changes right now. Also, I am not sure that Ruby hashes have
+        # an iterating order as part of their contract, but in practice
+        # it seems to work! :)
         if login == 'unassigned' then 'A' else assignees[login]['name'] end
       end.to_h
     end
