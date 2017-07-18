@@ -102,7 +102,6 @@ class Github
 
           # TODO maybe clean this up once all the cases are implemented
           entered_current_state_time = nil
-          norm = nil
 
           if type == :issue
             entered_current_state_time = item['timeline']['nodes'].find_all do |event|
