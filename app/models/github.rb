@@ -115,7 +115,7 @@ class Github
           end
 
           if entered_current_state_time
-            days_in_current_state = (DateTime.now - DateTime.parse(entered_current_state_time)).to_i
+            days_in_current_state = DateTime.parse(entered_current_state_time).business_days_until(DateTime.now).to_i
 
             if days_in_current_state <= 3
               norm = 'norm-good'
@@ -126,7 +126,7 @@ class Github
             end
 
             item['timing'] = {
-              'enteredCurrentStateTime' => entered_current_state_time,
+              'durationMessage' => time_ago_in_words(DateTime.now - days_in_current_state),
               'norm' => norm
             }
           end
