@@ -126,6 +126,7 @@ class Github
             end
 
             item['timing'] = {
+              'enteredCurrentStateTime' => entered_current_state_time,
               'durationMessage' => time_ago_in_words(DateTime.now - days_in_current_state),
               'norm' => norm
             }
