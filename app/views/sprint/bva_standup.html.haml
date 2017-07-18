@@ -13,6 +13,6 @@
       %h2{:style => "display: inline-block; padding-left: 15px;"}
         = github_name
         (#{issues.first[:assignee][:login]})
-    = render "issues_table", issues: issues
+    = render "issues_table_legacy", issues: issues
     %br/
  
