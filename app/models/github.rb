@@ -104,7 +104,6 @@ class Github
           norm = nil
 
           if type == :issue
-            # TODO  Need to also make sure that there's not a "validation failed"
             entered_current_state_time = item['timeline']['nodes'].find_all do |event|
               event['__typename'] == 'LabeledEvent' && event['label']['name'] == 'In Validation'
             end.map do |event|
@@ -139,6 +138,13 @@ class Github
 
       annotate_work_items!(issues, :issue, repo)
         .concat(annotate_work_items!(query_results['repository']['pullRequests']['nodes'], :pull_request, repo))
+        .sort_by do |work_item|
+          if work_item['timing']
+            work_item['timing']['enteredCurrentStateTime']
+          else 
+            '2100'
+          end
+        end
   end
 
   # I think it's confusing to refer to both PRs and issues as "issues". 
