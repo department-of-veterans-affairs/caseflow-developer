@@ -20,29 +20,48 @@ class Github
     # TODO This does not include PRs.
     @team_repos.map do |repo|
       query = <<-QUERY
+        fragment assignableFields on Assignable {
+          assignees(first: 100) {
+            nodes {
+              login
+              name
+              avatarUrl
+            }
+          }
+        }
+        fragment commentFields on Comment {
+          author {
+            login
+          }
+        }
+        fragment labelFields on Labelable {
+          labels(first: 100) {
+            nodes {
+              color
+              name
+            }
+          }  
+        }
         query($repo_owner: String!, $repo_name: String!, $state: IssueState!, $labels: [String!]!) { 
           repository(owner: $repo_owner, name: $repo_name) {
+            pullRequests(first: 100, states: OPEN) {
+              nodes {
+                ...assignableFields
+                ...commentFields
+                ...labelFields
+                number
+                title
+                url
+              }
+            }
             issues(states: [$state], first: 100, labels: $labels) {
               nodes {
-                assignees(first: 100) {
-                  nodes {
-                    login
-                    name
-                    avatarUrl
-                  }
-                }
-                url
-                title
+                ...assignableFields
+                ...commentFields
+                ...labelFields
                 number
-                author {
-                  login
-                }
-                labels(first: 100) {
-                  nodes {
-                    color
-                    name
-                  }
-                }
+                title
+                url
               }
             }
           }
