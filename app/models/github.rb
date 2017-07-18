@@ -58,13 +58,29 @@ class Github
               }
             }
             issues(first: 100, states: [$state], labels: $labels) {
-              nodes {
-                ...assignableFields
-                ...commentFields
-                ...labelFields
-                number
-                title
-                url
+              edges {
+                node {
+                  ...assignableFields
+                  ...commentFields
+                  ...labelFields
+                  number
+                  title
+                  url
+                  timeline(first: 100) {
+                    nodes { 
+                      __typename
+                      ... on LabeledEvent {
+                        createdAt
+                        label {
+                          name
+                        }
+                        actor {
+                          login
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -78,15 +94,51 @@ class Github
         labels: labels
       })
 
-      def add_repo_name_and_type(items, type, repo)
+      def annotate_work_items!(items, type, repo)
         items.each do |item|
           item['repositoryName'] = repo[:name]
           item['type'] = type
+
+          # TODO maybe clean this up once all the cases are implemented
+          entered_current_state_time = nil
+          norm = nil
+
+          if type == :issue
+            # TODO  Need to also make sure that there's not a "validation failed"
+            entered_current_state_time = item['timeline']['nodes'].find_all do |event|
+              event['__typename'] == 'LabeledEvent' && event['label']['name'] == 'In Validation'
+            end.map do |event|
+              event['createdAt']
+            end.max
+          end
+
+          if entered_current_state_time
+            days_in_current_state = (DateTime.now - DateTime.parse(entered_current_state_time)).to_i
+
+            if days_in_current_state <= 3
+              norm = 'norm-good'
+            elsif days_in_current_state <= 5
+              norm = 'norm-mediocre'
+            else
+              norm = 'norm-dangerous'
+            end
+
+            item['timing'] = {
+              'enteredCurrentStateTime' => entered_current_state_time,
+              'norm' => norm
+            }
+          end
         end
       end
 
-      add_repo_name_and_type(query_results['repository']['issues']['nodes'], :issue, repo)
-        .concat(add_repo_name_and_type(query_results['repository']['pullRequests']['nodes'], :pull_request, repo))
+      # We're wrapping the issues query in edges instead of accessing nodes directly because it's
+      # a workaround for a GH bug: https://twitter.com/nickheiner/status/887392169144852481.
+      issues = query_results['repository']['issues']['edges'].map do |edge|
+        edge['node']
+      end
+
+      annotate_work_items!(issues, :issue, repo)
+        .concat(annotate_work_items!(query_results['repository']['pullRequests']['nodes'], :pull_request, repo))
   end
 
   # I think it's confusing to refer to both PRs and issues as "issues". 
