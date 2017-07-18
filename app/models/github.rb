@@ -33,6 +33,7 @@ class Github
                 }
                 url
                 title
+                number
                 repository {
                   name
                 }
