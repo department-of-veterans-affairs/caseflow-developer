@@ -55,6 +55,7 @@ class Github
                 number
                 title
                 url
+                createdAt
               }
             }
             issues(first: 100, states: [$state], labels: $labels) {
@@ -66,7 +67,7 @@ class Github
                   number
                   title
                   url
-                  timeline(first: 100) {
+                  timeline(last: 100) {
                     nodes { 
                       __typename
                       ... on LabeledEvent {
@@ -105,10 +106,13 @@ class Github
 
           if type == :issue
             entered_current_state_time = item['timeline']['nodes'].find_all do |event|
-              event['__typename'] == 'LabeledEvent' && event['label']['name'] == 'In Validation'
+              event['__typename'] == 'LabeledEvent' && 
+                ['In Validation', 'In Progress'].include?(event['label']['name'])
             end.map do |event|
               event['createdAt']
             end.max
+          elsif type == :pull_request
+            entered_current_state_time = item['createdAt']
           end
 
           if entered_current_state_time
