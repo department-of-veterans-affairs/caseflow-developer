@@ -115,6 +115,7 @@ class Github
             end
 
             if entered_current_state_time
+              # I would like to make this more precise, but see: https://github.com/bokmann/business_time/issues/171
               days_in_current_state = DateTime.parse(entered_current_state_time).business_days_until(DateTime.now).to_i
 
               if days_in_current_state <= 3
