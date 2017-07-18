@@ -61,10 +61,12 @@
     - @in_progress_by_assignee_optional.each do |login, issues|
       .row
         %div
-          %img{:alt => "", :src => issues.first[:assignee][:avatar_url], :style => "border-radius: 50%; height: 100px;width: 100px;overflow: hidden;"}/
+          %img{:alt => "", 
+            :src => @assignees[login]['avatarUrl'], 
+            :style => "border-radius: 50%; height: 100px;width: 100px;overflow: hidden;"}/
           %h2{:style => "display: inline-block; padding-left: 15px;"}
-            = login
-            (#{issues.first[:assignee][:login]})
+            = @assignees[login]['name']
+            (#{login})
       = render "issues_table", issues: issues
       %br/
 
