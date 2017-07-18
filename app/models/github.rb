@@ -104,6 +104,8 @@ class Github
 
           if repo[:name] != 'appeals-design-research'
             if type == :issue
+              # If an issue has been in and out of "In Progress" or "In Validation" multiple times,
+              # we'll just take the most recent time.
               entered_current_state_time = item['timeline']['nodes'].find_all do |event|
                 event['__typename'] == 'LabeledEvent' && 
                   ['In Validation', 'In Progress'].include?(event['label']['name'])
