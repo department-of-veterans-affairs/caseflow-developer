@@ -112,6 +112,9 @@ class Github
         (issue['type'] == :pull_request && is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
     end
 
+    # This is certainly not the most algorithmically efficient way to do this, but the data set is 
+    # small enough that it doesn't make a difference.
+
     assignees = filtered_issues.map do |issue|
       issue['assignees']['nodes']
     end.flatten.uniq do |assignee|
