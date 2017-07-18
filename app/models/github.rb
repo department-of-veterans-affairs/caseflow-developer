@@ -150,6 +150,7 @@ class Github
           if work_item['timing']
             work_item['timing']['enteredCurrentStateTime']
           else 
+            # If an item does not have a timing, we'll put it at the end.
             '2100'
           end
         end
