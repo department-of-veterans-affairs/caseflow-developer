@@ -4,17 +4,40 @@ class SprintController < ApplicationController
   def standup
     @ci = CI.new
     @github = Github.new
-    @in_progress_by_assignee = @github.issues_by_assignee(params[:team], "In Progress")
 
-    @in_progress_by_assignee_optional = []
+    def sort_issues(issues, assignees) 
+      issues.sort_by do |login, issues| 
+        if login == 'unassigned' then 'A' else assignees[login]['name'] end
+      end.to_h
+    end
+
+    in_progress_by_assignee_unsorted = @github.issues_by_assignee(params[:team], "In Progress")
+    @assignees = in_progress_by_assignee_unsorted.map do |login, issues|
+      issues.map do |issue|
+        issue['assignees']['nodes']
+      end
+    end.flatten.uniq do |assignee|
+      assignee['login']
+    end.map do |assignee|
+      [assignee['login'], assignee]
+    end.push(['unassigned', {
+      'login' => 'unassigned',
+      'name' => 'Unassigned'
+    }]).to_h
+
+    @in_progress_by_assignee = sort_issues(in_progress_by_assignee_unsorted, @assignees)
+
+    in_progress_by_assignee_optional_unsorted = []
     required_logins = @github.team_members.map {|i| i[:login] }
     @in_progress_by_assignee.each do |assignee, issues|
       next if assignee == 'unassigned'
       unless required_logins.include?(assignee)
-        @in_progress_by_assignee_optional << [assignee, issues]
+        in_progress_by_assignee_optional_unsorted << [assignee, issues]
         @in_progress_by_assignee.delete(assignee)
       end
     end
+
+    @in_progress_by_assignee_optional = sort_issues(in_progress_by_assignee_optional_unsorted, @assignees)
 
     @wip_limit = 3
     @wip_limit_issues_by_assignee = @in_progress_by_assignee.map do |assignee, issues|

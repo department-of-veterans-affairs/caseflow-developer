@@ -14,14 +14,6 @@ class Github
 
   attr_accessor :team_members, :team_repos
 
-  def get_user_of_login(login, issues)
-    issues.map do |issue|
-      issue['assignees']['nodes']
-    end.flatten.group_by do |assignee|
-      assignee['login']
-    end[login].first
-  end
-
   def get_issues(team_name, state, *labels)
     get_team_info(team_name)
 
