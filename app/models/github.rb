@@ -104,14 +104,20 @@ class Github
 
           if repo[:name] != 'appeals-design-research'
             if type == :issue
-              # If an issue has been in and out of "In Progress" or "In Validation" multiple times,
-              # we'll just take the most recent time.
-              entered_current_state_time = item['timeline']['nodes'].find_all do |event|
-                event['__typename'] == 'LabeledEvent' && 
-                  ['In Validation', 'In Progress'].include?(event['label']['name'])
-              end.map do |event|
-                event['createdAt']
-              end.max
+              is_discussion_issue = item['labels']['nodes'].any? do |label|
+                label['name'] == 'discussion'
+              end
+              
+              unless is_discussion_issue
+                # If an issue has been in and out of "In Progress" or "In Validation" multiple times,
+                # we'll just take the most recent time.
+                entered_current_state_time = item['timeline']['nodes'].find_all do |event|
+                  event['__typename'] == 'LabeledEvent' && 
+                    ['In Validation', 'In Progress'].include?(event['label']['name'])
+                end.map do |event|
+                  event['createdAt']
+                end.max
+              end
             elsif type == :pull_request
               entered_current_state_time = item['createdAt']
             end
