@@ -16,7 +16,7 @@ class SprintController < ApplicationController
       end.to_h
     end
 
-    in_progress_by_assignee_unsorted, @assignees = @github.issues_by_assignee(params[:team], "In Progress")
+    in_progress_by_assignee_unsorted, @assignees = @github.issues_by_assignee(params[:team], "In-Progress")
 
     @in_progress_by_assignee = sort_issues(in_progress_by_assignee_unsorted, @assignees)
 
@@ -56,7 +56,7 @@ class SprintController < ApplicationController
 
     # TODO We shouldn't be doing two requests to each repo to get both 'In Progress' and in 'In Validation' tickets.
     # We should just make a single request and then do the sorting on this end. That should be much faster.
-    @in_validation_issues = @github.get_issues(params[:team], "OPEN", "In Validation") if params[:team] == 'CASEFLOW'
+    @in_validation_issues = @github.get_issues(params[:team], "OPEN", "In-Validation") if params[:team] == 'CASEFLOW'
     @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM'
   end
 
@@ -116,8 +116,8 @@ class SprintController < ApplicationController
     $ISS_STATUS = {"Triage" => "Triage",
                    "blocked" => "Blocked",
                    "validation-failed" => "Bugged",
-                   "In Progress" => "In Progress",
-                   "In Validation" => "In Validation",
+                   "In-Progress" => "In-Progress",
+                   "In-Validation" => "In-Validation",
                    "Current Sprint" => "Current Sprint"}
     $ISS_PRODUCT = {"caseflow-certification" => "Certification",
                     "caseflow-dispatch" => "Dispatch",
@@ -182,7 +182,7 @@ class SprintController < ApplicationController
         issue_events = @github.get_events_for_issue(iss)
         issue_events.each do |event|
           if event[:event] == "labeled"
-            if event[:label][:name] == "Current Sprint"
+            if event[:label][:name] == "Current-Sprint"
               cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
             end
           end
@@ -190,7 +190,7 @@ class SprintController < ApplicationController
         if cur_issue.date_planned.nil?
           issue_events.each do |event|
             if event[:event] == "labeled"
-              if event[:label][:name] == "In Progress"
+              if event[:label][:name] == "In-Progress"
                 cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
               end
             end
