@@ -4,7 +4,7 @@ class Github
   PRODUCT_LABELS = ["Dispatch", "eFolder", "Reader", "Certification", "Caseflow System"]
   REPORT_LABELS = ["NSD", "Source - Feedback","DSVA Member","Phone"]
   RESOLUTION_LABELS =["Resolution Team - Tier 2", "Resolution Team - Tier 3", "Resolution Team - Training"]
-  STATE_LABELS = ["In-Progress", "Blocked", "Closed"]
+  STATE_LABELS = ["In-Progress", "In Progress", "Blocked", "Closed"]
   
   
   GITHUB_TEAM_IDS = {
@@ -113,7 +113,7 @@ class Github
                 # we'll just take the most recent time.
                 entered_current_state_time = item['timeline']['nodes'].find_all do |event|
                   event['__typename'] == 'LabeledEvent' && 
-                    ['In-Validation', 'In-Progress'].include?(event['label']['name'])
+                    ['In-Validation', 'In Validation', 'In-Progress', 'In Progress'].include?(event['label']['name'])
                 end.map do |event|
                   event['createdAt']
                 end.max
@@ -239,7 +239,8 @@ class Github
         :name => 'appeals-support'
       }, 
       "OPEN", 
-      "In-Progress"
+      "In-Progress",
+      "In Progress"
     )
   end
 
