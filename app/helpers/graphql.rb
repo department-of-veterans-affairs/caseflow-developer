@@ -4,6 +4,7 @@ require 'json'
 module Graphql
   def Graphql.query(query_str, variables)
     Rails.logger.debug "Making graphql query: #{query_str} with variables #{variables}"
+
     response = HTTParty.post(
       'https://api.github.com/graphql', 
       headers: {
@@ -13,7 +14,8 @@ module Graphql
       body: {
         query: query_str,
         variables: variables
-      }.to_json
+      }.to_json,
+      timeout: 20
     ).parsed_response
 
     Rails.logger.debug "Got graphql response: #{response}"

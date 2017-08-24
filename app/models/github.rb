@@ -6,7 +6,6 @@ class Github
   RESOLUTION_LABELS =["Resolution Team - Tier 2", "Resolution Team - Tier 3", "Resolution Team - Training"]
   STATE_LABELS = ["In-Progress", "In Progress", "Blocked", "Closed"]
   
-  
   GITHUB_TEAM_IDS = {
     APPEALS_PM: 2221656,
     CASEFLOW: 2221658
@@ -282,6 +281,7 @@ class Github
   private
 
   def get_team_info(team_name)
+    Rails.logger.debug "Getting team info for '#{team_name}'"
     team_ids = if team_name.nil?
       GITHUB_TEAM_IDS.values
     else
@@ -289,10 +289,12 @@ class Github
     end
 
     @team_members = team_ids.map do |team_id|
+      Rails.logger.debug "Getting team members for #{team_id}"
       Octokit.team_members(team_id)
     end.flatten
-
+    
     @team_repos = team_ids.map do |team_id|
+      Rails.logger.debug "Getting team repos for #{team_id}"
       Octokit.team_repositories(team_id)
     end.flatten
   end
