@@ -166,6 +166,34 @@ class SprintController < ApplicationController
                   "bug-ui" => "UI Bug",
                   "tech-improvement" => "Technical"}
 
+      # We need to create a mapping of events ahead of time,
+      # rather than firing a query for every single issue.
+      # We need to loop through the issues we found and
+      # get a list of repo_owners and repo_names to go over.
+
+      query = <<-QUERY
+        query($repo_owner: String!, $repo_name: String!) { 
+          repository(owner: $repo_owner, name: $repo_name) {
+            issue#{iss[:number]}: issue(number: #{iss[:number]}) {
+              timeline(last: 100) {
+                nodes { 
+                  ... on LabeledEvent {
+                    label {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }            
+        }
+      QUERY
+      
+      issue_events = query_results = Graphql.query(query, {
+        repo_owner: repo[:owner][:login],
+        repo_name: repo[:name]
+      })
+
       log_timing("create_issues_array") do
         notes_issues.select do |issue|
           issue[:html_url].include?("\/issues\/")
