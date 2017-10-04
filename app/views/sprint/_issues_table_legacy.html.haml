@@ -8,6 +8,7 @@
         %th{"data-field" => "labels"} Labels
         %th{"data-field" => "assignees"} Assignees
         %th{"data-field" => "user"} Created By
+        %th{"data-field" => "age"} Business Time in Current State
     %tbody
       - issues.each do |issue|
         %tr{:style => ('background-color: #fff3e0' if issue.key?(:pull_request))}

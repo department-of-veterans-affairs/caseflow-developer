@@ -217,7 +217,7 @@ class Github
 
   #BVA Technologies
   def get_bva_issues()
-    issues = Octokit.list_issues("department-of-veterans-affairs/bva-technology", direction: 'desc')
+    issues = Octokit.list_issues("department-of-veterans-affairs/bva-technology", :labels => 'In Progress PMO')
     filtered_issues = issues.select { |i| i[:state] =='open'}
     grouped_issues = filtered_issues.group_by do |issue|
       issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
