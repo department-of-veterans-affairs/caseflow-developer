@@ -171,28 +171,43 @@ class SprintController < ApplicationController
       # We need to loop through the issues we found and
       # get a list of repo_owners and repo_names to go over.
 
-      query = <<-QUERY
-        query($repo_owner: String!, $repo_name: String!) { 
-          repository(owner: $repo_owner, name: $repo_name) {
-            issue#{iss[:number]}: issue(number: #{iss[:number]}) {
-              timeline(last: 100) {
-                nodes { 
-                  ... on LabeledEvent {
-                    label {
-                      name
-                    }
+      repo_query_parts = @repos.map do |slug|
+        pairs = slug.split('/')
+        owner = pairs[0]
+        repo_name = pairs[1]
+
+        issue_query_parts = notes_issues.select do |issue|
+          issue[:repository_url].include?(slug)
+        end.map do |issue|
+          <<-QUERY
+          issue#{issue[:number]}: issue(number: #{issue[:number]}) {
+            timeline(last: 100) {
+              nodes { 
+                ... on LabeledEvent {
+                  label {
+                    name
                   }
                 }
               }
             }
-          }            
+          }
+          QUERY
+        end.join('\n')
+        
+        <<-QUERY
+        repository_#{owner}_#{repo_name} repository(owner: "#{owner}", name: "#{repo_name}") {
+          #{issue_query_parts}
+        }            
+        QUERY
+      end.join('\n')
+
+      query = <<-QUERY
+        query { 
+          #{repo_query_parts}
         }
       QUERY
       
-      issue_events = query_results = Graphql.query(query, {
-        repo_owner: repo[:owner][:login],
-        repo_name: repo[:name]
-      })
+      issue_events = Graphql.query(query)
 
       log_timing("create_issues_array") do
         notes_issues.select do |issue|
