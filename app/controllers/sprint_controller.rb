@@ -283,6 +283,15 @@ class SprintController < ApplicationController
         issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes'].reverse.select do |event|
           event.has_key?('label')
         end
+
+        # TODO What is the logic for date_planned? What do we actually want?
+
+        # GH API v4 and v3 produce different results here. In labeling events,
+        # v3 shows the label name as it was at the time of the event. 
+        # v4 shows the label name as it is at this moment. This means that switching
+        # to v4 will produce different results than we've seen historically, since
+        # some label names have changed over time.
+
         current_sprint_label_event = issue_events.detect do |event|
           event['label']['name'] == "Current-Sprint"
         end
