@@ -136,6 +136,10 @@ class SprintController < ApplicationController
       ]
       @github = Github.new
 
+      # TODO The way we do this is hideously inefficient. Instead of fetching a bunch of issues
+      # and then constructing a monsterous GraphQL query, we should just do one query
+      # that has everything we need up-front.
+
       @date_since = params[:date_since]
       notes_issues = nil
       log_timing('get_github_issues') do
