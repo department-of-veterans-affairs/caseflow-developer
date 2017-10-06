@@ -1,5 +1,7 @@
 # Caseflow Developer
 
+If this were to be a production-grade app, there's a lot of refactoring that could be done.
+
 ## Development
 You must have the following env vars. Ask a current developer for them:
 

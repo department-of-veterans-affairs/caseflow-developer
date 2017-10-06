@@ -276,18 +276,20 @@ class SprintController < ApplicationController
         # get intake date
         repo_key = make_repo_query_key(iss[:repository_url].split("\/")[-2], iss[:repository_url].split("\/")[-1])
         issue_key = make_query_issue_key(iss)
-        issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes']
+        issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes'].select do |event|
+          event.has_key?('label')
+        end
         current_sprint_label_event = issue_events.detect do |event|
-          event['name'] == "Current-Sprint"
+          event['label']['name'] == "Current-Sprint"
         end
         if current_sprint_label_event
-          cur_issue.date_planned = event['createdAt'].strftime("%-m/%-d/%Y")
+          cur_issue.date_planned = current_sprint_label_event['createdAt'].strftime("%-m/%-d/%Y")
         else
           in_progress_label_event = issue_events.detect do |event|
-            event['name'] == "In-Progress" || event['name'] == "In Progress" 
+            event['label']['name'] == "In-Progress" || event['label']['name'] == "In Progress" 
           end
           if in_progress_label_event
-            cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
+            cur_issue.date_planned = in_progress_label_event['createdAt'].strftime("%-m/%-d/%Y")
           end
         end
         if cur_issue.date_planned.nil? || cur_issue.status.include?("New")
