@@ -139,7 +139,9 @@ class SprintController < ApplicationController
       @date_since = params[:date_since]
       notes_issues = nil
       log_timing('get_github_issues') do
-        notes_issues = @github.get_sprint_issues(@repos, @date_since, @date_until)
+        notes_issues = @github.get_sprint_issues(@repos, @date_since, @date_until).select do |issue|
+          issue[:html_url].include?("\/issues\/")
+        end
       end
       
       $ISS_ARR = {}
@@ -205,12 +207,14 @@ class SprintController < ApplicationController
           }
           QUERY
         end.join('')
-        
-        <<-QUERY
-        #{make_repo_query_key(owner, repo_name)}: repository(owner: "#{owner}", name: "#{repo_name}") {
-          #{issue_query_parts}
-        }            
-        QUERY
+
+        if issue_query_parts.length > 0
+          <<-QUERY
+          #{make_repo_query_key(owner, repo_name)}: repository(owner: "#{owner}", name: "#{repo_name}") {
+            #{issue_query_parts}
+          }            
+          QUERY
+        end
       end.join('')
 
       query = <<-QUERY
@@ -219,13 +223,13 @@ class SprintController < ApplicationController
         }
       QUERY
       
-      all_issue_events = Graphql.query(query)
-      binding.pry
+      all_issue_events = nil
+      log_timing("graphql query for issues") do
+        all_issue_events = Graphql.query(query)
+      end
 
       log_timing("create_issues_array") do
-        notes_issues.select do |issue|
-          issue[:html_url].include?("\/issues\/")
-        end.each do |iss|
+        notes_issues.each do |iss|
           log_timing("process issue #{iss[:number]}") do
             iss_num = iss[:number]
             cur_issue = OpenStruct.new(title: nil,
