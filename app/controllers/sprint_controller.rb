@@ -229,76 +229,72 @@ class SprintController < ApplicationController
         all_issue_events = Graphql.query(query)
       end
 
-      log_timing("create_issues_array") do
-        notes_issues.each do |iss|
-          log_timing("process issue #{iss[:number]}") do
-            iss_num = iss[:number]
-            cur_issue = OpenStruct.new(title: nil,
-            labels: [],
-            close_date: nil,
-            date_planned: nil,
-            team: nil,
-            link: nil,
-            rel_prs: [],
-            status: [],
-            product: [])
-            cur_issue.title = iss[:title]
-            cur_issue.link = iss[:html_url]
-            cur_issue.labels = iss[:labels].map { |lab| lab[:name] }
-            
-            # set status
-            cur_issue.status = cur_issue.labels & $ISS_STATUS.keys
-            cur_issue.status = cur_issue.status.map! { |status| $ISS_STATUS["#{status}"] }
+      notes_issues.each do |iss|
+        iss_num = iss[:number]
+        cur_issue = OpenStruct.new(title: nil,
+        labels: [],
+        close_date: nil,
+        date_planned: nil,
+        team: nil,
+        link: nil,
+        rel_prs: [],
+        status: [],
+        product: [])
+        cur_issue.title = iss[:title]
+        cur_issue.link = iss[:html_url]
+        cur_issue.labels = iss[:labels].map { |lab| lab[:name] }
+        
+        # set status
+        cur_issue.status = cur_issue.labels & $ISS_STATUS.keys
+        cur_issue.status = cur_issue.status.map! { |status| $ISS_STATUS["#{status}"] }
 
-            # set product
-            cur_issue.product = cur_issue.labels & $ISS_PRODUCT.keys
-            cur_issue.product = cur_issue.product.map! { |product| $ISS_PRODUCT["#{product}"] }
-            cur_issue.product = ["eFolder"] if iss[:repository_url].split("\/")[-1] == "caseflow-efolder"
-            cur_issue.product = ["Feedback"] if iss[:repository_url].split("\/")[-1] == "caseflow-feedback"
-            cur_issue.product = ["Caseflow"] if cur_issue.product.empty?
+        # set product
+        cur_issue.product = cur_issue.labels & $ISS_PRODUCT.keys
+        cur_issue.product = cur_issue.product.map! { |product| $ISS_PRODUCT["#{product}"] }
+        cur_issue.product = ["eFolder"] if iss[:repository_url].split("\/")[-1] == "caseflow-efolder"
+        cur_issue.product = ["Feedback"] if iss[:repository_url].split("\/")[-1] == "caseflow-feedback"
+        cur_issue.product = ["Caseflow"] if cur_issue.product.empty?
 
-            # set team
-            cur_issue.team = cur_issue.labels & $ISS_TEAM.keys
-            cur_issue.team = cur_issue.team.map! { |team| $ISS_TEAM["#{team}"] }
-            cur_issue.team = ["Omega"] if iss[:repository_url].split("\/")[-1] == "appeals-deployment"
-            cur_issue.team = ["Missing"] if cur_issue.team.empty?
+        # set team
+        cur_issue.team = cur_issue.labels & $ISS_TEAM.keys
+        cur_issue.team = cur_issue.team.map! { |team| $ISS_TEAM["#{team}"] }
+        cur_issue.team = ["Omega"] if iss[:repository_url].split("\/")[-1] == "appeals-deployment"
+        cur_issue.team = ["Missing"] if cur_issue.team.empty?
 
-            # set type
-            cur_issue.type = cur_issue.labels & $ISS_TYPE.keys
-            cur_issue.type = cur_issue.type.map! { |type| $ISS_TYPE["#{type}"] }
-            cur_issue.type = ["Feature"] if cur_issue.type.empty?
+        # set type
+        cur_issue.type = cur_issue.labels & $ISS_TYPE.keys
+        cur_issue.type = cur_issue.type.map! { |type| $ISS_TYPE["#{type}"] }
+        cur_issue.type = ["Feature"] if cur_issue.type.empty?
 
-            # set closed date
-            if iss[:state] == "closed"
-              cur_issue.status = ["Done"]
-              cur_issue.close_date = iss[:updated_at].strftime("%-m/%-d/%Y")
-            end
-            cur_issue.status = ["New"] if cur_issue.status.empty?
+        # set closed date
+        if iss[:state] == "closed"
+          cur_issue.status = ["Done"]
+          cur_issue.close_date = iss[:updated_at].strftime("%-m/%-d/%Y")
+        end
+        cur_issue.status = ["New"] if cur_issue.status.empty?
 
-            # get intake date
-            repo_key = make_repo_query_key(iss[:repository_url].split("\/")[-2], iss[:repository_url].split("\/")[-1])
-            issue_key = make_query_issue_key(iss)
-            issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes']
-            current_sprint_label_event = issue_events.detect do |event|
-              event['name'] == "Current-Sprint"
-            end
-            if current_sprint_label_event
-              cur_issue.date_planned = event['createdAt'].strftime("%-m/%-d/%Y")
-            else
-              in_progress_label_event = issue_events.detect do |event|
-                event['name'] == "In-Progress" || event['name'] == "In Progress" 
-              end
-              if in_progress_label_event
-                cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
-              end
-            end
-            if cur_issue.date_planned.nil? || cur_issue.status.include?("New")
-              next
-            end
-
-            $ISS_ARR[iss_num] = cur_issue
+        # get intake date
+        repo_key = make_repo_query_key(iss[:repository_url].split("\/")[-2], iss[:repository_url].split("\/")[-1])
+        issue_key = make_query_issue_key(iss)
+        issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes']
+        current_sprint_label_event = issue_events.detect do |event|
+          event['name'] == "Current-Sprint"
+        end
+        if current_sprint_label_event
+          cur_issue.date_planned = event['createdAt'].strftime("%-m/%-d/%Y")
+        else
+          in_progress_label_event = issue_events.detect do |event|
+            event['name'] == "In-Progress" || event['name'] == "In Progress" 
+          end
+          if in_progress_label_event
+            cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
           end
         end
+        if cur_issue.date_planned.nil? || cur_issue.status.include?("New")
+          next
+        end
+
+        $ISS_ARR[iss_num] = cur_issue
       end
 
       respond_to do |format|
