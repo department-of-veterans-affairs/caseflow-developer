@@ -170,6 +170,14 @@ class SprintController < ApplicationController
         name.gsub('-', '_')
       end
 
+      def make_query_issue_key(issue)
+        "issue#{issue[:number]}"
+      end
+
+      def make_repo_query_key(owner, repo_name)
+        "repository_#{sanitize_name_for_graphql(owner)}_#{sanitize_name_for_graphql(repo_name)}"
+      end
+
       # We need to create a mapping of events ahead of time,
       # rather than firing a query for every single issue.
       # We need to loop through the issues we found and
@@ -184,7 +192,7 @@ class SprintController < ApplicationController
           issue[:repository_url].include?(slug)
         end.map do |issue|
           <<-QUERY
-          issue#{issue[:number]}: issue(number: #{issue[:number]}) {
+          #{make_query_issue_key(issue)}: issue(number: #{issue[:number]}) {
             timeline(last: 100) {
               nodes { 
                 ... on LabeledEvent {
@@ -199,7 +207,7 @@ class SprintController < ApplicationController
         end.join('')
         
         <<-QUERY
-        repository_#{sanitize_name_for_graphql(owner)}_#{sanitize_name_for_graphql(repo_name)} repository(owner: "#{owner}", name: "#{repo_name}") {
+        #{make_repo_query_key(owner, repo_name)}: repository(owner: "#{owner}", name: "#{repo_name}") {
           #{issue_query_parts}
         }            
         QUERY
@@ -211,7 +219,8 @@ class SprintController < ApplicationController
         }
       QUERY
       
-      issue_events = Graphql.query(query)
+      all_issue_events = Graphql.query(query)
+      binding.pry
 
       log_timing("create_issues_array") do
         notes_issues.select do |issue|
@@ -262,7 +271,9 @@ class SprintController < ApplicationController
             cur_issue.status = ["New"] if cur_issue.status.empty?
 
             # get intake date
-            issue_events = nil
+            repo_key = make_repo_query_key(iss[:repository_url].split("\/")[-2], iss[:repository_url].split("\/")[-1])
+            issue_key = make_query_issue_key(iss)
+            issue_events = all_issue_events[repo_key][issue_key]
             log_timing("get events for issue #{iss[:number]}") do
               issue_events = @github.get_events_for_issue(iss)
             end
