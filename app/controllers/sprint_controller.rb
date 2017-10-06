@@ -276,7 +276,7 @@ class SprintController < ApplicationController
         # get intake date
         repo_key = make_repo_query_key(iss[:repository_url].split("\/")[-2], iss[:repository_url].split("\/")[-1])
         issue_key = make_query_issue_key(iss)
-        issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes'].select do |event|
+        issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes'].reverse.select do |event|
           event.has_key?('label')
         end
         current_sprint_label_event = issue_events.detect do |event|
