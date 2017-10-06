@@ -283,13 +283,13 @@ class SprintController < ApplicationController
           event['label']['name'] == "Current-Sprint"
         end
         if current_sprint_label_event
-          cur_issue.date_planned = current_sprint_label_event['createdAt'].strftime("%-m/%-d/%Y")
+          cur_issue.date_planned = Date.parse(current_sprint_label_event['createdAt']).strftime("%-m/%-d/%Y")
         else
           in_progress_label_event = issue_events.detect do |event|
             event['label']['name'] == "In-Progress" || event['label']['name'] == "In Progress" 
           end
           if in_progress_label_event
-            cur_issue.date_planned = in_progress_label_event['createdAt'].strftime("%-m/%-d/%Y")
+            cur_issue.date_planned = Date.parse(in_progress_label_event['createdAt']).strftime("%-m/%-d/%Y")
           end
         end
         if cur_issue.date_planned.nil? || cur_issue.status.include?("New")
