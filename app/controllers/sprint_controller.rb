@@ -124,7 +124,7 @@ class SprintController < ApplicationController
       end
     end
   end
-  
+
   def notes_report
     handle_timeout_error do
       @repos = [
@@ -139,7 +139,7 @@ class SprintController < ApplicationController
       @date_since = params[:date_since]
       notes_issues = nil
       log_timing('get_github_issues') do
-        notes_issues = @github.get_sprint_issues(@repos,@date_since, @date_until)
+        notes_issues = @github.get_sprint_issues(@repos, @date_since, @date_until)
       end
       
       $ISS_ARR = {}
@@ -165,6 +165,10 @@ class SprintController < ApplicationController
       $ISS_TYPE = {"bug" => "Bug",
                   "bug-ui" => "UI Bug",
                   "tech-improvement" => "Technical"}
+
+      def sanitize_name_for_graphql(name) 
+        name.gsub('-', '_')
+      end
 
       # We need to create a mapping of events ahead of time,
       # rather than firing a query for every single issue.
@@ -192,14 +196,14 @@ class SprintController < ApplicationController
             }
           }
           QUERY
-        end.join('\n')
+        end.join('')
         
         <<-QUERY
-        repository_#{owner}_#{repo_name} repository(owner: "#{owner}", name: "#{repo_name}") {
+        repository_#{sanitize_name_for_graphql(owner)}_#{sanitize_name_for_graphql(repo_name)} repository(owner: "#{owner}", name: "#{repo_name}") {
           #{issue_query_parts}
         }            
         QUERY
-      end.join('\n')
+      end.join('')
 
       query = <<-QUERY
         query { 
