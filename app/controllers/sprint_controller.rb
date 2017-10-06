@@ -191,13 +191,14 @@ class SprintController < ApplicationController
         repo_name = pairs[1]
 
         issue_query_parts = notes_issues.select do |issue|
-          issue[:repository_url].include?(slug)
+          issue[:repository_url].end_with?(slug)
         end.map do |issue|
           <<-QUERY
           #{make_query_issue_key(issue)}: issue(number: #{issue[:number]}) {
             timeline(last: 100) {
               nodes { 
                 ... on LabeledEvent {
+                  createdAt
                   label {
                     name
                   }
@@ -277,24 +278,18 @@ class SprintController < ApplicationController
             # get intake date
             repo_key = make_repo_query_key(iss[:repository_url].split("\/")[-2], iss[:repository_url].split("\/")[-1])
             issue_key = make_query_issue_key(iss)
-            issue_events = all_issue_events[repo_key][issue_key]
-            log_timing("get events for issue #{iss[:number]}") do
-              issue_events = @github.get_events_for_issue(iss)
+            issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes']
+            current_sprint_label_event = issue_events.detect do |event|
+              event['name'] == "Current-Sprint"
             end
-            issue_events.each do |event|
-              if event[:event] == "labeled"
-                if event[:label][:name] == "Current-Sprint"
-                  cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
-                end
+            if current_sprint_label_event
+              cur_issue.date_planned = event['createdAt'].strftime("%-m/%-d/%Y")
+            else
+              in_progress_label_event = issue_events.detect do |event|
+                event['name'] == "In-Progress" || event['name'] == "In Progress" 
               end
-            end
-            if cur_issue.date_planned.nil?
-              issue_events.each do |event|
-                if event[:event] == "labeled"
-                  if event[:label][:name] == "In-Progress" || event[:label][:name] == "In Progress" 
-                    cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
-                  end
-                end
+              if in_progress_label_event
+                cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
               end
             end
             if cur_issue.date_planned.nil? || cur_issue.status.include?("New")
