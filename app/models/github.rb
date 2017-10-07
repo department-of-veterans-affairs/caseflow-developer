@@ -216,20 +216,22 @@ class Github
 
 
   #BVA Technologies
-  def get_bva_issues()
-    issues = Octokit.list_issues("department-of-veterans-affairs/bva-technology", :labels => 'In Progress PMO')
-    filtered_issues = issues.select { |i| i[:state] =='open'}
-    grouped_issues = filtered_issues.group_by do |issue|
-      issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
-      issue[:assignee][:login]
-    end
+  # def get_bva_issues()
 
-    #Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
-    grouped_issues.transform_keys do |key|
-      Octokit.user(key)[:name] || key
-    end 
-  end
+  #   issues = Octokit.list_issues("department-of-veterans-affairs/bva-technology", :labels => 'In Progress PMO'  )
+  #   filtered_issues = issues.select { |i| i[:state] =='open'}
+  #   grouped_issues = filtered_issues.group_by do |issue|
+  #     issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
+  #     issue[:assignee][:login]
+  #   end
 
+  #   #Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
+  #   grouped_issues.transform_keys do |key|
+  #     Octokit.user(key)[:name] || key
+  #   end 
+  # end
+
+  
   def get_product_support_issues
     get_issues_for_repo({
         :owner => {
@@ -242,6 +244,22 @@ class Github
       "In Progress"
     )
   end
+
+
+  def get_bva_issues
+    get_issues_for_repo({
+        :owner => {
+          :login => 'department-of-veterans-affairs'
+        },
+        :name => 'bva-technology'
+      }, 
+      "OPEN", 
+      "In Progress PMO",
+      "In Progress VACOLS"
+    )
+  end
+
+   # ['In Progress PMO', 'In Progress VACOLS']
 
    #Use hash to Keep issues created in past 7 days
   def get_all_support_issues

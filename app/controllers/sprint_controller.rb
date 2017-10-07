@@ -71,6 +71,7 @@ class SprintController < ApplicationController
       @in_validation_issues = 
         @github.get_issues(params[:team], "OPEN", "In-Validation", "In Validation") if params[:team] == 'CASEFLOW'
       @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM'
+      @bva_standup_report = @github.get_bva_support_issues if params[:team] == 'APPEALS_PM'
     end
   end
 
