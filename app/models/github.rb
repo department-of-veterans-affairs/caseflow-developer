@@ -270,7 +270,8 @@ class Github
         sort: 'updated',
         direction: 'desc',
         state: 'all'))
-    end
+      end
+    Rails.logger.debug "get_sprint_issues found #{@issues.length} issues"
     return @issues
   end
 

@@ -1,4 +1,6 @@
 class SprintController < ApplicationController
+  include ApplicationHelper
+
   before_action :authenticate_user!
 
   def handle_timeout_error
@@ -122,7 +124,7 @@ class SprintController < ApplicationController
       end
     end
   end
-  
+
   def notes_report
     handle_timeout_error do
       @repos = [
@@ -134,8 +136,17 @@ class SprintController < ApplicationController
       ]
       @github = Github.new
 
+      # TODO The way we do this is hideously inefficient. Instead of fetching a bunch of issues
+      # and then constructing a monsterous GraphQL query, we should just do one query
+      # that has everything we need up-front.
+
       @date_since = params[:date_since]
-      @notes_issues = @github.get_sprint_issues(@repos,@date_since, @date_until)
+      notes_issues = nil
+      log_timing('get_github_issues') do
+        notes_issues = @github.get_sprint_issues(@repos, @date_since, @date_until).select do |issue|
+          issue[:html_url].include?("\/issues\/")
+        end
+      end
       
       $ISS_ARR = {}
       $ISS_STATUS = {"Triage" => "Triage",
@@ -160,75 +171,145 @@ class SprintController < ApplicationController
       $ISS_TYPE = {"bug" => "Bug",
                   "bug-ui" => "UI Bug",
                   "tech-improvement" => "Technical"}
-      @notes_issues.map do |iss|
-        if iss[:html_url].include?("\/issues\/")
-          iss_num = iss[:number]
-          cur_issue = OpenStruct.new(title: nil,
-                                    labels: [],
-                                    close_date: nil,
-                                    date_planned: nil,
-                                    team: nil,
-                                    link: nil,
-                                    rel_prs: [],
-                                    status: [],
-                                    product: [])
-          cur_issue.title = iss[:title]
-          cur_issue.link = iss[:html_url]
-          cur_issue.labels = iss[:labels].map { |lab| lab[:name] }
 
-          # set status
-          cur_issue.status = cur_issue.labels & $ISS_STATUS.keys
-          cur_issue.status = cur_issue.status.map! { |status| $ISS_STATUS["#{status}"] }
+      def sanitize_name_for_graphql(name) 
+        name.gsub('-', '_')
+      end
 
-          # set product
-          cur_issue.product = cur_issue.labels & $ISS_PRODUCT.keys
-          cur_issue.product = cur_issue.product.map! { |product| $ISS_PRODUCT["#{product}"] }
-          cur_issue.product = ["eFolder"] if iss[:repository_url].split("\/")[-1] == "caseflow-efolder"
-          cur_issue.product = ["Feedback"] if iss[:repository_url].split("\/")[-1] == "caseflow-feedback"
-          cur_issue.product = ["Caseflow"] if cur_issue.product.empty?
+      def make_query_issue_key(issue)
+        "issue#{issue[:number]}"
+      end
 
-          # set team
-          cur_issue.team = cur_issue.labels & $ISS_TEAM.keys
-          cur_issue.team = cur_issue.team.map! { |team| $ISS_TEAM["#{team}"] }
-          cur_issue.team = ["Omega"] if iss[:repository_url].split("\/")[-1] == "appeals-deployment"
-          cur_issue.team = ["Missing"] if cur_issue.team.empty?
+      def make_repo_query_key(owner, repo_name)
+        "repository_#{sanitize_name_for_graphql(owner)}_#{sanitize_name_for_graphql(repo_name)}"
+      end
 
-          # set type
-          cur_issue.type = cur_issue.labels & $ISS_TYPE.keys
-          cur_issue.type = cur_issue.type.map! { |type| $ISS_TYPE["#{type}"] }
-          cur_issue.type = ["Feature"] if cur_issue.type.empty?
+      # We need to create a mapping of events ahead of time,
+      # rather than firing a query for every single issue.
+      # We need to loop through the issues we found and
+      # get a list of repo_owners and repo_names to go over.
 
-          # set closed date
-          if iss[:state] == "closed"
-            cur_issue.status = ["Done"]
-            cur_issue.close_date = iss[:updated_at].strftime("%-m/%-d/%Y")
-          end
-          cur_issue.status = ["New"] if cur_issue.status.empty?
+      repo_query_parts = @repos.map do |slug|
+        pairs = slug.split('/')
+        owner = pairs[0]
+        repo_name = pairs[1]
 
-          # get intake date
-          issue_events = @github.get_events_for_issue(iss)
-          issue_events.each do |event|
-            if event[:event] == "labeled"
-              if event[:label][:name] == "Current-Sprint"
-                cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
-              end
-            end
-          end
-          if cur_issue.date_planned.nil?
-            issue_events.each do |event|
-              if event[:event] == "labeled"
-                if event[:label][:name] == "In-Progress" || event[:label][:name] == "In Progress" 
-                  cur_issue.date_planned = event[:created_at].strftime("%-m/%-d/%Y")
-                end
-              end
-            end
-          end
-          if cur_issue.date_planned.nil? || cur_issue.status.include?("New")
-            next
-          end
+        issue_query_parts = notes_issues.select do |issue|
+          issue[:repository_url].end_with?(slug)
+        end.map do |issue|
+          <<-QUERY
+          #{make_query_issue_key(issue)}: issue(number: #{issue[:number]}) {
+            timeline(last: 100) {
+              nodes { 
+                ... on LabeledEvent {
+                  createdAt
+                  label {
+                    name
+                  }
+                }
+              }
+            }
+          }
+          QUERY
+        end.join('')
 
-          $ISS_ARR[iss_num] = cur_issue
+        if issue_query_parts.length > 0
+          <<-QUERY
+          #{make_repo_query_key(owner, repo_name)}: repository(owner: "#{owner}", name: "#{repo_name}") {
+            #{issue_query_parts}
+          }            
+          QUERY
         end
+      end.join('')
+
+      query = <<-QUERY
+        query { 
+          #{repo_query_parts}
+        }
+      QUERY
+      
+      all_issue_events = nil
+      log_timing("graphql query for issues") do
+        all_issue_events = Graphql.query(query)
+      end
+
+      notes_issues.each do |iss|
+        iss_num = iss[:number]
+        cur_issue = OpenStruct.new(title: nil,
+        labels: [],
+        close_date: nil,
+        date_planned: nil,
+        team: nil,
+        link: nil,
+        rel_prs: [],
+        status: [],
+        product: [])
+        cur_issue.title = iss[:title]
+        cur_issue.link = iss[:html_url]
+        cur_issue.labels = iss[:labels].map { |lab| lab[:name] }
+        
+        # set status
+        cur_issue.status = cur_issue.labels & $ISS_STATUS.keys
+        cur_issue.status = cur_issue.status.map! { |status| $ISS_STATUS["#{status}"] }
+
+        # set product
+        cur_issue.product = cur_issue.labels & $ISS_PRODUCT.keys
+        cur_issue.product = cur_issue.product.map! { |product| $ISS_PRODUCT["#{product}"] }
+        cur_issue.product = ["eFolder"] if iss[:repository_url].split("\/")[-1] == "caseflow-efolder"
+        cur_issue.product = ["Feedback"] if iss[:repository_url].split("\/")[-1] == "caseflow-feedback"
+        cur_issue.product = ["Caseflow"] if cur_issue.product.empty?
+
+        # set team
+        cur_issue.team = cur_issue.labels & $ISS_TEAM.keys
+        cur_issue.team = cur_issue.team.map! { |team| $ISS_TEAM["#{team}"] }
+        cur_issue.team = ["Omega"] if iss[:repository_url].split("\/")[-1] == "appeals-deployment"
+        cur_issue.team = ["Missing"] if cur_issue.team.empty?
+
+        # set type
+        cur_issue.type = cur_issue.labels & $ISS_TYPE.keys
+        cur_issue.type = cur_issue.type.map! { |type| $ISS_TYPE["#{type}"] }
+        cur_issue.type = ["Feature"] if cur_issue.type.empty?
+
+        # set closed date
+        if iss[:state] == "closed"
+          cur_issue.status = ["Done"]
+          cur_issue.close_date = iss[:updated_at].strftime("%-m/%-d/%Y")
+        end
+        cur_issue.status = ["New"] if cur_issue.status.empty?
+
+        # get intake date
+        repo_key = make_repo_query_key(iss[:repository_url].split("\/")[-2], iss[:repository_url].split("\/")[-1])
+        issue_key = make_query_issue_key(iss)
+        issue_events = all_issue_events[repo_key][issue_key]['timeline']['nodes'].reverse.select do |event|
+          event.has_key?('label')
+        end
+
+        # TODO What is the logic for date_planned? What do we actually want?
+
+        # GH API v4 and v3 produce different results here. In labeling events,
+        # v3 shows the label name as it was at the time of the event. 
+        # v4 shows the label name as it is at this moment. This means that switching
+        # to v4 will produce different results than we've seen historically, since
+        # some label names have changed over time.
+
+        current_sprint_label_event = issue_events.detect do |event|
+          event['label']['name'] == "Current-Sprint"
+        end
+        if current_sprint_label_event
+          cur_issue.date_planned = Date.parse(current_sprint_label_event['createdAt']).strftime("%-m/%-d/%Y")
+        else
+          in_progress_label_event = issue_events.detect do |event|
+            event['label']['name'] == "In-Progress" || event['label']['name'] == "In Progress" 
+          end
+          if in_progress_label_event
+            cur_issue.date_planned = Date.parse(in_progress_label_event['createdAt']).strftime("%-m/%-d/%Y")
+          end
+        end
+        if cur_issue.date_planned.nil? || cur_issue.status.include?("New")
+          next
+        end
+
+        $ISS_ARR[iss_num] = cur_issue
       end
 
       respond_to do |format|

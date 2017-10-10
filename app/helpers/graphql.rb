@@ -2,7 +2,7 @@ require 'httparty'
 require 'json'
 
 module Graphql
-  def Graphql.query(query_str, variables)
+  def Graphql.query(query_str, variables={})
     Rails.logger.debug "Making graphql query: #{query_str} with variables #{variables}"
 
     response = HTTParty.post(
