@@ -10,18 +10,22 @@
         %th{"data-field" => "user"} Created By
         %th{"data-field" => "age"} Business Time in Current State
     %tbody
-      - issues.each do |issue|
-        %tr{:style => ('background-color: #fff3e0' if issue.key?(:pull_request))}
+      - issues.sort_by {|work_item| if work_item['type'] == :pull_request then 0 else 1 end}.each do |issue|
+        %tr{:style => ('background-color: #fff3e0' if issue['type'] == :pull_request)}
           %td
-            %a{:href => issue[:html_url]}
-              = "PR" if issue.key? :pull_request
-              \##{issue[:number]}
-          %td= issue[:html_url].split("/")[4]
-          %td= issue[:title]
+            %a{:href => issue['url']}
+              = "PR" if issue['type'] == :pull_request
+              \##{issue['number']}
+          %td= issue['repositoryName']
+          %td= issue['title']
           %td
-            - issue[:labels].each do |l|
-              .chip{:style => "background-color: ##{l[:color]}"}= l[:name]
+            - issue['labels'].each do |label|
+              .chip{:style => "background-color: ##{label['color']}"}= label['name']
           %td
-            = issue[:assignees].map{ |assignee| assignee[:login] }.join(", ")
+            = issue['assignees'].map{ |assignee| assignee['login'] }.join(", ")
           %td
-            = issue[:user][:login]
+            = issue['user']['login']
+          %td
+            - if issue['timing']
+              .cf-norm{:class => issue['timing']['norm']}
+                = issue['timing']['durationMessage']

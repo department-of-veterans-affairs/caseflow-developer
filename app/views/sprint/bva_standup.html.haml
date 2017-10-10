@@ -1,16 +1,23 @@
 %h4 Daily Standup Report
 %blockquote
-  %table{data: {chart: 'line'}, class: 'table-hover' }
-    %tbody
-      - @bva_standup_report.each do |issue|
-        %tr{:style => ('background-color: #fff3e0' if issue.key?("pull_request"))}
-          %td
-            %a{:href => issue["html_url"]}
-              = "PR" if issue.key? "pull_request"
-              \#{issue["number"]}
-          %td= issue["title"]
-          %td
-            - issue["labels"].each do |l|
-              .chip = l["name"]
-
-            
+  %p
+    Only issues that are marked as
+    %strong open
+    are shown.
+%br
+.row
+  - @in_progress_by_assignee.each do |login, issues| 
+    .row
+      - if @assignees[login]['avatarUrl']
+        %img{:alt => "", 
+          :src => @assignees[login]['avatarUrl'], 
+          :style => "border-radius: 50%; height: 100px;width: 100px;overflow: hidden;"}/
+      %h2{:style => "display: inline-block; padding-left: 15px;"}
+        = @assignees[login]['name']
+        (#{login})
+      - if @wip_limit_issues_by_assignee[login][:issue_count] > 0
+        %span.cf-norm{:class => @wip_limit_issues_by_assignee[login][:norm]} 
+          = @wip_limit_issues_by_assignee[login][:issue_count]
+          current in-progress tasks.
+    = render "issues_table", issues: issues
+    %br/
