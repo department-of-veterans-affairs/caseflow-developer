@@ -8,7 +8,8 @@ class Github
   
   GITHUB_TEAM_IDS = {
     APPEALS_PM: 2221656,
-    CASEFLOW: 2221658
+    CASEFLOW: 2221658,
+    BVA_TECHNOLOGY: 1827228 
   }
 
   attr_accessor :team_members, :team_repos
@@ -112,7 +113,7 @@ class Github
                 # we'll just take the most recent time.
                 entered_current_state_time = item['timeline']['nodes'].find_all do |event|
                   event['__typename'] == 'LabeledEvent' && 
-                    ['In-Validation', 'In Validation', 'In-Progress', 'In Progress'].include?(event['label']['name'])
+                    ['In-Validation', 'In Validation', 'In-Progress', 'In Progress', 'In Progress VACOLS', 'In Progress PMO'].include?(event['label']['name'])
                 end.map do |event|
                   event['createdAt']
                 end.max
@@ -176,13 +177,13 @@ class Github
     issue['assignees']['nodes'].empty?
   end
 
+
   def issues_by_assignee(team_name, *labels)
     issues = get_work_items(team_name, 'OPEN', *labels)
     filtered_issues = issues.reject do |issue| 
-      issue['repositoryName'] == "appeals-support" || 
-        (issue['type'] == :pull_request && is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
-    end
-
+    issue['repositoryName'] == "appeals-support" || 
+    (issue['type'] == :pull_request && is_issue_unassigned(issue) && issue['title'] =~ /wip/i)
+  end
     # This is certainly not the most algorithmically efficient way to do this, but the data set is 
     # small enough that it doesn't make a difference.
 
@@ -213,23 +214,7 @@ class Github
 
     [issues_by_assignee, assignees]
   end
-
-
-  #BVA Technologies
-  def get_bva_issues()
-    issues = Octokit.list_issues("department-of-veterans-affairs/bva-technology", direction: 'desc')
-    filtered_issues = issues.select { |i| i[:state] =='open'}
-    grouped_issues = filtered_issues.group_by do |issue|
-      issue[:assignee] =  {login: "Unassigned"} if issue[:assignee].nil?
-      issue[:assignee][:login]
-    end
-
-    #Full Name is not available w/o a call to Octokit.user(), expensive ~3secs
-    grouped_issues.transform_keys do |key|
-      Octokit.user(key)[:name] || key
-    end 
-  end
-
+ 
   def get_product_support_issues
     get_issues_for_repo({
         :owner => {
@@ -242,6 +227,7 @@ class Github
       "In Progress"
     )
   end
+
 
    #Use hash to Keep issues created in past 7 days
   def get_all_support_issues

@@ -28,7 +28,8 @@ class SprintController < ApplicationController
       end
 
       Rails.logger.debug "Getting issues by assignee"
-      in_progress_by_assignee_unsorted, @assignees = @github.issues_by_assignee(params[:team], "In-Progress", "In Progress")
+      in_progress_by_assignee_unsorted, @assignees = @github.issues_by_assignee(params[:team], "In-Progress", "In Progress", 'In Progress VACOLS', 'In Progress PMO')
+
       
       Rails.logger.debug "Sorting issues"
       @in_progress_by_assignee = sort_issues(in_progress_by_assignee_unsorted, @assignees)
@@ -73,17 +74,14 @@ class SprintController < ApplicationController
       @in_validation_issues = 
         @github.get_issues(params[:team], "OPEN", "In-Validation", "In Validation") if params[:team] == 'CASEFLOW'
       @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM'
+      
+      # Removes optional assignees
+      if params[:team] == "BVA_TECHNOLOGY"
+        @in_progress_by_assignee_optional = []
+      end
     end
   end
 
-  #BVA Technology
-  def bva_standup
-    handle_timeout_error do
-      @github = Github.new 
-      @bva_standup_report = @github.get_bva_issues
-    end
-  end
-  
   
   def issues_report
     handle_timeout_error do
