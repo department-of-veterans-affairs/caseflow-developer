@@ -72,8 +72,11 @@ class SprintController < ApplicationController
       @in_validation_issues = 
         @github.get_issues(params[:team], "OPEN", "In-Validation", "In Validation") if params[:team] == 'CASEFLOW'
       @product_support_issues = @github.get_product_support_issues if params[:team] == 'APPEALS_PM'
-
       
+      # Removes optional assignees
+      if params[:team] == "BVA_TECHNOLOGY"
+        @in_progress_by_assignee_optional = []
+      end
     end
   end
 
