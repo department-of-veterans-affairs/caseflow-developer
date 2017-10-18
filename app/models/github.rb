@@ -113,7 +113,7 @@ class Github
                 # we'll just take the most recent time.
                 entered_current_state_time = item['timeline']['nodes'].find_all do |event|
                   event['__typename'] == 'LabeledEvent' && 
-                    ['In-Validation', 'In Validation', 'In-Progress', 'In Progress', 'In Progress VACOLS', 'In Progress PMO'].include?(event['label']['name'])
+                    ['In-Validation', 'In Validation', 'In-Progress', 'In Progress', 'In Progress VACOLS', 'In Progress PMO', 'Peer Review'].include?(event['label']['name'])
                 end.map do |event|
                   event['createdAt']
                 end.max
