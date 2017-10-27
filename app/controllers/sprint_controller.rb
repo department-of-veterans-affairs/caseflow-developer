@@ -28,7 +28,7 @@ class SprintController < ApplicationController
       end
 
       Rails.logger.debug "Getting issues by assignee"
-      in_progress_by_assignee_unsorted, @assignees = @github.issues_by_assignee(params[:team], "In-Progress", "In Progress", 'In Progress VACOLS', 'In Progress PMO')
+      in_progress_by_assignee_unsorted, @assignees = @github.issues_by_assignee(params[:team], "In-Progress", "In Progress", 'In Progress VACOLS', 'In Progress PMO', 'Peer Review')
 
       
       Rails.logger.debug "Sorting issues"
