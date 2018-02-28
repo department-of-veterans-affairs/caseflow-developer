@@ -11,3 +11,9 @@ export GITHUB_CLIENT_ID=
 export GITHUB_CLIENT_SECRET=
 export GITHUB_ACCESS_TOKEN=
 ```
+
+## Deployment
+
+The app is deployed on Heroku. Ask a current dev to add you as a collaborator.
+
+Pushes to `master` are automatically deployed.
