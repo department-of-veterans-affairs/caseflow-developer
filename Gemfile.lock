@@ -208,7 +208,7 @@ GEM
     pusher-client (0.6.2)
       json
       websocket (~> 1.0)
-    rack (2.0.1)
+    rack (2.1.4.1)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (5.0.1)
@@ -328,7 +328,7 @@ DEPENDENCIES
   pg
   pry
   puma
-  rack (~> 2.0, >= 2.0.1)
+  rack (~> 2.1)
   rails
   react_on_rails
   redis
